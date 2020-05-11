@@ -1,0 +1,46 @@
+---
+### Yellowfin All in one Service ###
+apiVersion: v1
+kind: Service
+metadata:
+  name: yellowfin-all-in-one
+spec:
+  ports:
+  - name: "web"
+    port: 8080
+    targetPort: 8080
+  selector:
+    app: yellowfin-all-in-one
+  type: LoadBalancer
+status:
+  loadBalancer: {}
+---
+### Yellowfin All in one Deployment ###
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: default
+  labels:
+    app: yellowfin-all-in-one
+  name: yellowfin-all-in-one
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: yellowfin-all-in-one
+  template:
+    metadata:
+      labels:
+        app: yellowfin-all-in-one
+    spec:
+      containers:
+        - env:
+          - name: APP_MEMORY
+            value: "6144"
+          name: yellowfin-all-in-one
+          image: <PATH_TO_DOCKER_REGISTRY>/yellowfin-all-in-one:<RELEASE_VERSION_GOES_HERE>
+          ports:
+            - name: web
+              containerPort: 8080
+
