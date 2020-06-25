@@ -13,7 +13,7 @@ services:
       - JDBC_CONN_PASS=INSERT_JDBC_PASSWORD_HERE # Password for the database user
       - JDBC_CONN_ENCRYPTED=true # Flag for indicating if the database user's password supplied is encrypted or not.
       - APP_MEMORY=4096 # The amount of memory in megabytes to assign to the Yellowfin Application.
-      #- CLUSTER_ADDRESS="yf-node-{{.Task.Slot}}" # Address to use for clustering – recommended to use Docker networking to connect the containers. If left commented, it will use the IP of the containers instead.
+      - CLUSTER_INTERFACE=match-interface:eth1 #Sets the JGroups "Bind_addr" attribute. Adjust as needed if the containers aren't communicating with each other.
       - CLUSTER_PORT=7800 # TCP Port to use for cluster networking, used to connect between containers
 
    deploy:
