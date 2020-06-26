@@ -1,0 +1,110 @@
+---
+### Yellowfin Production Instance - Service ###
+apiVersion: v1
+kind: Service
+metadata:
+  name: yellowfin-multi-instance-prod
+spec:
+  ports:
+  - name: "web"
+    port: 8080
+    targetPort: 8080
+  selector:
+    app: yellowfin-multi-instance-prod
+  type: LoadBalancer
+status:
+  loadBalancer: {}
+---
+### Yellowfin Development Instance - Service ###
+apiVersion: v1
+kind: Service
+metadata:
+  name: yellowfin-multi-instance-dev
+spec:
+  ports:
+  - name: "web"
+    port: 8080
+    targetPort: 8080
+  selector:
+    app: yellowfin-multi-instance-dev
+  type: LoadBalancer
+status:
+  loadBalancer: {}
+---
+### Yellowfin Production Instance - Deployment ###
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: default
+  labels:
+    app: yellowfin-multi-instance-prod
+  name: yellowfin-multi-instance-prod
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: yellowfin-multi-instance-prod
+  template:
+    metadata:
+      labels:
+        app: yellowfin-multi-instance-prod
+    spec:
+      containers:
+        - env:
+          - name: APP_MEMORY
+            value: "6144"
+          - name: JDBC_CLASS_NAME
+            value: INSERT_DATABASE_TYPE_1_HERE
+          - name: JDBC_CONN_ENCRYPTED
+            value: "true"
+          - name: JDBC_CONN_PASS
+            value: INSERT_JDBC_PASSWORD_1_HERE
+          - name: JDBC_CONN_URL
+            value: jdbc:INSERT_JDBC_CONNECTION_STRING_1_HERE
+          - name: JDBC_CONN_USER
+            value: INSERT_DATABASE_USER_1_HERE
+          name: yellowfin-multi-instance-prod
+          image: <PATH_TO_DOCKER_REGISTRY>/yellowfin-app-only:<RELEASE_VERSION_GOES_HERE>
+          ports:
+            - name: web
+              containerPort: 8080
+---
+### Yellowfin Development Instance - Deployment ###
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: default
+  labels:
+    app: yellowfin-multi-instance-dev
+  name: yellowfin-multi-instance-dev
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: yellowfin-multi-instance-dev
+  template:
+    metadata:
+      labels:
+        app: yellowfin-multi-instance-dev
+    spec:
+      containers:
+        - env:
+          - name: APP_MEMORY
+            value: "4096"
+          - name: JDBC_CLASS_NAME
+            value: INSERT_DATABASE_TYPE_2_HERE
+          - name: JDBC_CONN_ENCRYPTED
+            value: "true"
+          - name: JDBC_CONN_PASS
+            value: INSERT_JDBC_PASSWORD_2_HERE
+          - name: JDBC_CONN_URL
+            value: jdbc: INSERT_JDBC_CONNECTION_2_STRING_HERE
+          - name: JDBC_CONN_USER
+            value: INSERT_DATABASE_USER_2_HERE
+          name: yellowfin-multi-instance-prod
+          image: <PATH_TO_DOCKER_REGISTRY>/yellowfin-app-only:<RELEASE_VERSION_GOES_HERE>
+          ports:
+            - name: web
+              containerPort: 8080

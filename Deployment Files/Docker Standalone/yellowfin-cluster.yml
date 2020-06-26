@@ -1,0 +1,50 @@
+version: '3'
+services:
+  yellowfin-cluster-node-1:
+   ports:
+      - "8080:8080" # Maps Yellowfin running on port 8080 to the host's port 8080
+      #- "7801:7800" # Maps the Yellowfin cluster port to an external port on the host (Optional)
+   environment:
+      # Required environment variables
+      - JDBC_CLASS_NAME=INSERT_DATABASE_TYPE_HERE # Database driver class name
+      - JDBC_CONN_URL=jdbc:INSERT_JDBC_CONNECTION_STRING_HERE # Database connection string
+      - JDBC_CONN_USER=INSERT_DATABASE_USER_HERE # Username to use when accessing the database
+      - JDBC_CONN_PASS=INSERT_JDBC_PASSWORD_HERE # Password for the database user
+      - JDBC_CONN_ENCRYPTED=true # Flag for indicating if the database user's password supplied is encrypted or not.
+      - APP_MEMORY=4096 # The amount of memory in megabytes to assign to the Yellowfin Application.
+      - CLUSTER_ADDRESS=yellowfin-cluster-node-1 # Address to use for clustering – recommended to use Docker networking to connect the containers
+      - CLUSTER_PORT=7800 # TCP Port to use for cluster networking
+   image: "<PATH_TO_DOCKER_REGISTRY>/yellowfin-app-only:<RELEASE_VERSION_GOES_HERE>" # Path to your app-only image of Yellowfin
+
+  yellowfin-cluster-node-2:
+   ports:
+      - "8081:8080" # Maps Yellowfin running on port 8081 to the host's port 8080
+      #- "7802:7800" # Maps the Yellowfin cluster port to an external port on the host (Optional)
+   environment:
+      # Required environment variables
+      - JDBC_CLASS_NAME=INSERT_DATABASE_TYPE_HERE # Database driver class name
+      - JDBC_CONN_URL=jdbc:INSERT_JDBC_CONNECTION_STRING_HERE # Database connection string
+      - JDBC_CONN_USER=INSERT_DATABASE_USER_HERE # Username to use when accessing the database
+      - JDBC_CONN_PASS=INSERT_JDBC_PASSWORD_HERE # Password for the database user
+      - JDBC_CONN_ENCRYPTED=true # Flag for indicating if the database user's password supplied is encrypted or not.
+      - APP_MEMORY=4096 # The amount of memory in megabytes to assign to the Yellowfin Application.
+      - CLUSTER_ADDRESS=yellowfin-cluster-node-2 # Address to use for clustering – recommended to use Docker networking to connect the containers
+      - CLUSTER_PORT=7800 # TCP Port to use for cluster networking
+   image: "<PATH_TO_DOCKER_REGISTRY>/yellowfin-app-only:<RELEASE_VERSION_GOES_HERE>" # Path to your app-only image of Yellowfin
+
+  yellowfin-cluster-node-3:
+   ports:
+      - "8082:8080" # Maps Yellowfin running on port 8082 to the host's port 8080
+      #- "7803:7800" # Maps the Yellowfin cluster port to an external port on the host (Optional)
+   environment:
+      # Required environment variables
+      - JDBC_CLASS_NAME=INSERT_DATABASE_TYPE_HERE # Database driver class name
+      - JDBC_CONN_URL=jdbc:INSERT_JDBC_CONNECTION_STRING_HERE # Database connection string
+      - JDBC_CONN_USER=INSERT_DATABASE_USER_HERE # Username to use when accessing the database
+      - JDBC_CONN_PASS=INSERT_JDBC_PASSWORD_HERE # Password for the database user
+      - JDBC_CONN_ENCRYPTED=true # Flag for indicating if the database user's password supplied is encrypted or not.
+      - APP_MEMORY=4096 # The amount of memory in megabytes to assign to the Yellowfin Application.
+      - CLUSTER_ADDRESS=yellowfin-cluster-node-3 # Address to use for clustering – recommended to use Docker networking to connect the containers
+      - CLUSTER_PORT=7800 # TCP Port to use for cluster networking
+   image: "<PATH_TO_DOCKER_REGISTRY>/yellowfin-app-only:<RELEASE_VERSION_GOES_HERE>" # Path to your app-only image of Yellowfin
+

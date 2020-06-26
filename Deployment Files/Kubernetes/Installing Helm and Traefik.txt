@@ -1,0 +1,19 @@
+## Installing Traefik on Kubernetes using Helm ##
+
+# Step 1 - Check that instance has a connection to the Kubernetes Cluster that you want to manage.
+kubectl get svc
+# If you are managing multiple Kubernetes clusters and are seeing services for a different cluster, follow the steps in this guide for switching to the right cluster: https://kubernetes.io/docs/tasks/access-application-cluster/configure-access-multiple-clusters/
+
+# Step 2 - Install Helm 3 via the quick start script provided by the Helm maintainers. Helm is going to assist us with getting Traefik up and running on the Kubernetes cluster.
+curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 > get_helm.sh
+chmod 700 get_helm.sh
+./get_helm.sh
+
+# Step 3 - Add Traefik's Helm chart repository 
+helm repo add traefik https://containous.github.io/traefik-helm-chart
+helm repo update
+
+# Step 4 - Install Traefik on your Kubernetes cluster
+helm install traefik traefik/traefik
+## When the helm deployment finishes, it will setup Traefik to be an available Ingress type into your Kubernetes cluster.
+

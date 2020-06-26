@@ -1,0 +1,75 @@
+---
+### Yellowfin Standalone Service ###
+apiVersion: v1
+kind: Service
+metadata:
+  name: yellowfin-standalone
+
+spec:
+  ports:
+    - protocol: TCP
+      name: web
+      port: 8080
+  selector:
+    app: yellowfin-standalone
+---
+### Yellowfin Standalone Deployment ###
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  namespace: default
+  name: yellowfin-standalone
+  labels:
+    app: yellowfin-standalone
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: yellowfin-standalone
+  template:
+    metadata:
+      labels:
+        app: yellowfin-standalone
+    spec:
+      containers:
+        - env:
+          - name: APP_MEMORY
+            value: "4096"
+          - name: JDBC_CLASS_NAME
+            value: INSERT_DATABASE_TYPE_HERE
+          - name: JDBC_CONN_ENCRYPTED
+            value: "true"
+          - name: JDBC_CONN_PASS
+            value: INSERT_JDBC_PASSWORD_HERE
+          - name: JDBC_CONN_URL
+            value: jdbc:INSERT_JDBC_CONNECTION_STRING_HERE
+          - name: JDBC_CONN_USER
+            value: INSERT_DATABASE_USER_HERE
+          name: yellowfin-standalone
+          image: <PATH_TO_DOCKER_REGISTRY>/yellowfin-app-only:<RELEASE_VERSION_GOES_HERE>
+          ports:
+            - name: web
+              containerPort: 8080
+
+---
+### Yellowfin Standalone Ingress ###
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: yellowfinstandaloneingressroute
+  namespace: default
+spec:
+  entryPoints:
+    - web
+  routes:
+  - match: Host(`INSERT_DNS_HOSTNAME`)
+    kind: Rule
+    services:
+    - name: yellowfin-standalone
+      port: 8080
+      sticky:
+        cookie:
+          httpOnly: true
+          name: stickyCookie
+

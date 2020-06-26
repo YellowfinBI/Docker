@@ -1,0 +1,8 @@
+version: '3'
+services:
+  yellowfin-all-in-one:
+   ports:
+      - "8080:8080" # Maps Yellowfin running on port 8080 to the host's port 8080
+   environment:
+      - APP_MEMORY=4096 # The amount of memory in megabytes to assign to the Yellowfin Application.
+   image: "<PATH_TO_DOCKER_REGISTRY>/yellowfin-all-in-one:<RELEASE_VERSION_GOES_HERE>"
