@@ -39,7 +39,7 @@ spec:
           - name: APP_MEMORY
             value: "6144"
           name: yellowfin-all-in-one
-          image: <PATH_TO_DOCKER_REGISTRY>/yellowfin-all-in-one:<RELEASE_VERSION_GOES_HERE>
+          image: yellowfinbi/yellowfin-all-in-one:<RELEASE_VERSION_GOES_HERE>
           ports:
             - name: web
               containerPort: 8080

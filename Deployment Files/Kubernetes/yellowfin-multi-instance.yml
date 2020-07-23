@@ -65,7 +65,7 @@ spec:
           - name: JDBC_CONN_USER
             value: INSERT_DATABASE_USER_1_HERE
           name: yellowfin-multi-instance-prod
-          image: <PATH_TO_DOCKER_REGISTRY>/yellowfin-app-only:<RELEASE_VERSION_GOES_HERE>
+          image: yellowfinbi/yellowfin-app-only:<RELEASE_VERSION_GOES_HERE>
           ports:
             - name: web
               containerPort: 8080
@@ -104,7 +104,7 @@ spec:
           - name: JDBC_CONN_USER
             value: INSERT_DATABASE_USER_2_HERE
           name: yellowfin-multi-instance-prod
-          image: <PATH_TO_DOCKER_REGISTRY>/yellowfin-app-only:<RELEASE_VERSION_GOES_HERE>
+          image: yellowfinbi/yellowfin-app-only:<RELEASE_VERSION_GOES_HERE>
           ports:
             - name: web
               containerPort: 8080

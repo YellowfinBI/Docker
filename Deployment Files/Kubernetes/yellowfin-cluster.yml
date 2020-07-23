@@ -50,8 +50,12 @@ spec:
             value: jdbc:INSERT_JDBC_CONNECTION_STRING_HERE
           - name: JDBC_CONN_USER
             value:INSERT_DATABASE_USER_HERE
+          - name: NODE_BACKGROUND_TASKS
+            value: REPORT_BROADCAST_BROADCASTTASK,REPORT_BROADCAST_MIREPORTTASK,FILTER_CACHE,SOURCE_FILTER_REFRESH,SOURCE_FILTER_UPDATE_REMINDER,THIRD_PARTY_AUTORUN,ORGREF_CODE_REFRESH,ETL_PROCESS_TASK,SIGNALS_DCR_TASK,SIGNALS_ANALYSIS_TASK,SIGNALS_CLEANUP_TASK,COMPOSITE_VIEW_REFRESH,SIGNALS_CORRELATION_TASK
+          - name: NODE_PARALLEL_TASKS
+            value: 4,4,4,4,4,4,4,4,4,4,4,4,4
           name: yellowfin-cluster
-          image: <PATH_TO_DOCKER_REGISTRY>/yellowfin-app-only:<RELEASE_VERSION_GOES_HERE>
+          image: yellowfinbi/yellowfin-app-only:<RELEASE_VERSION_GOES_HERE>
           ports:
             - name: web
               containerPort: 8080

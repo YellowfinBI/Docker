@@ -11,7 +11,7 @@ services:
       - JDBC_CONN_PASS=INSERT_JDBC_PASSWORD_1_HERE # Password for the database user
       - JDBC_CONN_ENCRYPTED=true # Flag for indicating if the database user's password supplied is encrypted or not.
       - APP_MEMORY=4096 # The amount of memory in megabytes to assign to the Yellowfin Application.
-   image: "<DOCKER_HUB_ACCOUNT_GOES_HERE>/yellowfin-app-only: <RELEASE_VERSION_GOES_HERE>" # Path to your app-only image of Yellowfin
+   image: "yellowfinbi/yellowfin-app-only: <RELEASE_VERSION_GOES_HERE>" # Path to your app-only image of Yellowfin
 
   yellowfin-multi-instance-dev:
    ports:
@@ -24,4 +24,4 @@ services:
       - JDBC_CONN_PASS=INSERT_JDBC_PASSWORD_2_HERE # Password for the database user
       - JDBC_CONN_ENCRYPTED=true # Flag for indicating if the database user's password supplied is encrypted or not.
       - APP_MEMORY=4096 # The amount of memory in megabytes to assign to the Yellowfin Application.
-   image: "<PATH_TO_DOCKER_REGISTRY>/yellowfin-app-only:<RELEASE_VERSION_GOES_HERE>" # Path to your app-only image of Yellowfin
+   image: "yellowfinbi/yellowfin-app-only:<RELEASE_VERSION_GOES_HERE>" # Path to your app-only image of Yellowfin
