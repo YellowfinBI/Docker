@@ -66,8 +66,8 @@ Configuration Options can be passed to the docker containers via -e parameter.
 | DB Password Encrypted, JDBC_CONN_ENCRYPTED | Specify whether the Database Password is encrypted (true/false) | ```-e JDBC_CONN_ENCRYPTED=true ```|
 | Connection Pool Size, JDBC_MAX_COUNT | Specify the maximum size of the Repository Database connection pool. (Default: 25) | ```-e JDBC_MAX_COUNT=25``` |
 | Default Welcome Page, WELCOME_PAGE | Specify the default index page.  | ```-e WELCOME_PAGE=custom_index.jsp``` |
-| Internal Application HTTP Port | Specify the internal HTTP port. (Default: 8080)| ```-e APP_SERVER_PORT=9090``` |
-| Internal Shutdown Port | Specify the internal shutdown port. (Default: 8083)| ```-e TCP_PORT=9093``` |
+| Internal Application HTTP Port, APP_SERVER_PORT | Specify the internal HTTP port. (Default: 8080)| ```-e APP_SERVER_PORT=9090``` |
+| Internal Shutdown Port, TCP_PORT | Specify the internal shutdown port. (Default: 8083)| ```-e TCP_PORT=9093``` |
 | Proxy Port, PROXY_PORT | External Proxy Port | ```-e PROXY_PORT=443``` |
 | Proxy Scheme, PROXY_SCHEME | External Proxy Scheme (http/https) | ```-e PROXY_SCHEME=https``` |
 | Proxy Host, PROXY_HOST | External Proxy Host or IP address | ```-e PROXY_HOST=reporting.company.com``` |
