@@ -66,13 +66,13 @@ Configuration Options can be passed to the docker containers via -e parameter.
 | DB Password Encrypted, JDBC_CONN_ENCRYPTED | Specify whether the Database Password is encrypted (true/false) | ```-e JDBC_CONN_ENCRYPTED=true ```|
 | Connection Pool Size, JDBC_MAX_COUNT | Specify the maximum size of the Repository Database connection pool. (Default: 25) | ```-e JDBC_MAX_COUNT=25``` |
 | Default Welcome Page, WELCOME_PAGE | Specify the default index page.  | ```-e WELCOME_PAGE=custom_index.jsp``` |
-| Internal Application HTTP Port | Specify the internal HTTP port. (Default: 8080)| ```-e APP_SERVER_PORT=9090``` |
-| Internal Shutdown Port | Specify the internal shutdown port. (Default: 8083)| ```-e TCP_PORT=9093``` |
+| Internal Application HTTP Port, APP_SERVER_PORT | Specify the internal HTTP port. (Default: 8080)| ```-e APP_SERVER_PORT=9090``` |
+| Internal Shutdown Port, TCP_PORT | Specify the internal shutdown port. (Default: 8083)| ```-e TCP_PORT=9093``` |
 | Proxy Port, PROXY_PORT | External Proxy Port | ```-e PROXY_PORT=443``` |
 | Proxy Scheme, PROXY_SCHEME | External Proxy Scheme (http/https) | ```-e PROXY_SCHEME=https``` |
 | Proxy Host, PROXY_HOST | External Proxy Host or IP address | ```-e PROXY_HOST=reporting.company.com``` |
 | External Cluster Address, CLUSTER_ADDRESS | External Cluster Address for Cluster Messaging. Usually the host or IP address of the Docker Host | ```-e CLUSTER_ADDRESS=10.10.10.23``` |
-| External Cluster Port, CLUSTER_PORT | A Unique TCP port for this container to receive Cluster Messages from other nodes | ```-e CLUSTER_ADDRESS=7801``` |
+| External Cluster Port, CLUSTER_PORT | A Unique TCP port for this container to receive Cluster Messages from other nodes | ```-e CLUSTER_PORT=7801``` |
 | Internal Cluster Network Adapter, CLUSTER_INTERFACE | Specify the docker interface to bind Cluster Messages to. Defaults to eth0, but this may need to be changed for Kubernetes and DockerSwarm | ```-e CLUSTER_INTERFACE=match-interface:eth1``` |
 | Background Processing Task Types, NODE_BACKGROUND_TASKS | Comma separated list of which background Task Types can be run on this node. NODE_PARALLEL_TASKS must also be updated if this item is specified. If unspecified, all Task Types will be enabled. | ```-e NODE_BACKGROUND_TASKS=FILTER_CACHE,ETL_PROCESS_TASK``` |
 | Background Task Processing Jobs, NODE_PARALLEL_TASKS | Comma separated list of the number of concurrent tasks for each Task Type that can be run on this node. The number of elements passed here must match the number of Task Types passed by NODE_BACKGROUND_TASKS | ```-e NODE_PARALLEL_TASKS=5,4``` |
