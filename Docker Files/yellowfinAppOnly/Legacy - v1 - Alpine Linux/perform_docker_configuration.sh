@@ -4,7 +4,7 @@
 COMPLETION_FILE=/opt/yellowfin/appserver/bin/docker_configuration_done
 if test -f "$COMPLETION_FILE"; then
     echo "Docker Configuration Error: $COMPLETION_FILE already exists, exiting"
-else
+else   
 
 ################################################
 # Configuration changes to catalina.sh
@@ -12,7 +12,7 @@ else
 
 # Replace ${installer.appname} Options with ""
 sed -i 's/${installer.appname} Options//g' /opt/yellowfin/appserver/bin/catalina.sh
-
+ 
 # Replace JAVA_HOME="${JDKPath}" with ""
 sed -i 's/JAVA_HOME="${JDKPath}"/#JAVA_HOME=Removed For Docker/g' /opt/yellowfin/appserver/bin/catalina.sh
 
@@ -20,7 +20,7 @@ sed -i 's/JAVA_HOME="${JDKPath}"/#JAVA_HOME=Removed For Docker/g' /opt/yellowfin
 sed -i 's/CATALINA_HOME="${INSTALL_PATH}\/appserver"/CATALINA_HOME="\/opt\/yellowfin\/appserver"/g' /opt/yellowfin/appserver/bin/catalina.sh
 
 # Use Default Java Memory allocation, or set to the value of $APP_MEMORY
-if [ ! -z "${APP_MEMORY}" ]; then
+if [[ ! -z "${APP_MEMORY}" ]]; then
   # Replace JAVA_OPTS="$JAVA_OPTS -Xms128m -Xmx{APP_MEMORY}m
   sed -i 's/-Xmx${installer.app-server-memory}m/-Xmx'"$APP_MEMORY"'m/g' /opt/yellowfin/appserver/bin/catalina.sh
 else
@@ -32,17 +32,17 @@ fi
 sed -i 's/# JAVA_OPTS="$JAVA_OPTS -XX:PermSize=64m -XX:MaxPermSize=1024m"/# JAVA_OPTS="$JAVA_OPTS -XX:PermSize=64m -XX:MaxPermSize=1024m"\n\nJAVA_OPTS="$JAVA_OPTS -Djava.net.preferIPv4Stack=true -Djgroups.receive_on_all_interfaces=true"/g' /opt/yellowfin/appserver/bin/catalina.sh
 
 #Add External JGroups Address
-if [ ! -z "${CLUSTER_ADDRESS}" ]; then
+if [[ ! -z "${CLUSTER_ADDRESS}" ]]; then
   sed -i 's/# JAVA_OPTS="$JAVA_OPTS -XX:PermSize=64m -XX:MaxPermSize=1024m"/# JAVA_OPTS="$JAVA_OPTS -XX:PermSize=64m -XX:MaxPermSize=1024m"\n\nJAVA_OPTS="$JAVA_OPTS -Djgroups.external_addr='"$CLUSTER_ADDRESS"'"/g' /opt/yellowfin/appserver/bin/catalina.sh
 fi
 
-if [ ! -z "${CLUSTER_PORT}" ]; then
+if [[ ! -z "${CLUSTER_PORT}" ]]; then
   sed -i 's/# JAVA_OPTS="$JAVA_OPTS -XX:PermSize=64m -XX:MaxPermSize=1024m"/# JAVA_OPTS="$JAVA_OPTS -XX:PermSize=64m -XX:MaxPermSize=1024m"\n\nJAVA_OPTS="$JAVA_OPTS -Djgroups.external_port='"$CLUSTER_PORT"'"/g' /opt/yellowfin/appserver/bin/catalina.sh
 fi
 
-if [ ! -z "${CLUSTER_INTERFACE}" ]; then
+if [[ ! -z "${CLUSTER_INTERFACE}" ]]; then
   sed -i 's/# JAVA_OPTS="$JAVA_OPTS -XX:PermSize=64m -XX:MaxPermSize=1024m"/# JAVA_OPTS="$JAVA_OPTS -XX:PermSize=64m -XX:MaxPermSize=1024m"\n\nJAVA_OPTS="$JAVA_OPTS -Djgroups.bind_addr='"$CLUSTER_INTERFACE"'"/g' /opt/yellowfin/appserver/bin/catalina.sh
-else
+else 
   sed -i 's/# JAVA_OPTS="$JAVA_OPTS -XX:PermSize=64m -XX:MaxPermSize=1024m"/# JAVA_OPTS="$JAVA_OPTS -XX:PermSize=64m -XX:MaxPermSize=1024m"\n\nJAVA_OPTS="$JAVA_OPTS -Djgroups.bind_addr=match-interface:eth0"/g' /opt/yellowfin/appserver/bin/catalina.sh
 fi
 
@@ -61,9 +61,9 @@ sed -i 's/${installer.additional.bof.settings}//g' /opt/yellowfin/appserver/weba
 sed -i 's/<param-value>${installer.appname} Connection Pool<\/param-value>/<param-value>Connection Pool<\/param-value>/g' /opt/yellowfin/appserver/webapps/ROOT/WEB-INF/web.xml
 
 # Replace ${welcome.file} with $WELCOME_PAGE or index_mi.jsp
-if [ -z "${WELCOME_PAGE}" ]; then
+if [[ -z "${WELCOME_PAGE}" ]]; then
   sed -i 's/${welcome.file}/index_mi.jsp/g' /opt/yellowfin/appserver/webapps/ROOT/WEB-INF/web.xml
-else
+else 
   sed -i 's@${welcome.file}@'"$WELCOME_PAGE"'@g' /opt/yellowfin/appserver/webapps/ROOT/WEB-INF/web.xml
 fi
 
@@ -80,14 +80,14 @@ sed -i 's/${config-user-userid}/'"$JDBC_CONN_USER"'/g' /opt/yellowfin/appserver/
 sed -i 's/${config-user-passwd}/'"$JDBC_CONN_PASS"'/g' /opt/yellowfin/appserver/webapps/ROOT/WEB-INF/web.xml
 
 # Replace ${config-user-passwd-encryption} with environment variable $JDBC_CONN_ENCRYPTED
-if [ -z "${JDBC_CONN_ENCRYPTED}" ]; then
+if [[ -z "${JDBC_CONN_ENCRYPTED}" ]]; then
   sed -i 's/${config-user-passwd-encryption}/false/g' /opt/yellowfin/appserver/webapps/ROOT/WEB-INF/web.xml
-else
+else 
   sed -i 's/${config-user-passwd-encryption}/'"$JDBC_CONN_ENCRYPTED"'/g' /opt/yellowfin/appserver/webapps/ROOT/WEB-INF/web.xml
 fi
 
 # Replace <param-value>25</param-value> with <param-value>$JDBC_MAX_COUNT</param-value>
-if [ ! -z "${JDBC_MAX_COUNT}" ]; then
+if [[ ! -z "${JDBC_MAX_COUNT}" ]]; then
   sed -i 's@<param-value>25</param-value>@<param-value>'"$JDBC_MAX_COUNT"'</param-value>@g' /opt/yellowfin/appserver/webapps/ROOT/WEB-INF/web.xml
 fi
 
@@ -167,16 +167,16 @@ sed -i 's@<!-- Web Services Servlet -->@<servlet>\n       <servlet-name>ClusterM
 
 
 # Add TaskTypes with environment variable $NODE_BACKGROUND_TASKS, or inserts the default
-if [ -z "${NODE_BACKGROUND_TASKS}" ]; then
+if [[ -z "${NODE_BACKGROUND_TASKS}" ]]; then
   sed -i 's@<load-on-startup>11@ <init-param>\n             <param-name>TaskTypes</param-name>\n             <param-value>\nREPORT_BROADCAST_BROADCASTTASK,\nREPORT_BROADCAST_MIREPORTTASK,\nFILTER_CACHE,\nSOURCE_FILTER_REFRESH,\nSOURCE_FILTER_UPDATE_REMINDER,\nTHIRD_PARTY_AUTORUN,\nORGREF_CODE_REFRESH,\nETL_PROCESS_TASK,\nSIGNALS_DCR_TASK,\nSIGNALS_ANALYSIS_TASK,\nSIGNALS_CLEANUP_TASK,\nCOMPOSITE_VIEW_REFRESH,\nSIGNALS_CORRELATION_TASK\n             </param-value>\n       </init-param>\n      <load-on-startup>11@g' /opt/yellowfin/appserver/webapps/ROOT/WEB-INF/web.xml
-else
+else 
   sed -i 's@<load-on-startup>11@ <init-param>\n             <param-name>TaskTypes</param-name>\n             <param-value>'"$NODE_BACKGROUND_TASKS"'</param-value>\n       </init-param>\n      <load-on-startup>11@g' /opt/yellowfin/appserver/webapps/ROOT/WEB-INF/web.xml
 fi
 
 # Add MaxParallelTaskCounts with environment variable $NODE_PARALLEL_TASKS, or inserts the default
-if [ -z "${NODE_PARALLEL_TASKS}" ]; then
+if [[ -z "${NODE_PARALLEL_TASKS}" ]]; then
   sed -i 's@<load-on-startup>11@ <init-param>\n             <param-name>MaxParallelTaskCounts</param-name>\n             <param-value>2,2,2,2,2,2,2,2,2,2,2,2,2</param-value>\n       </init-param>\n      <load-on-startup>11@g' /opt/yellowfin/appserver/webapps/ROOT/WEB-INF/web.xml
-else
+else 
   sed -i 's@<load-on-startup>11@ <init-param>\n             <param-name>MaxParallelTaskCounts</param-name>\n             <param-value>'"$NODE_PARALLEL_TASKS"'</param-value>\n       </init-param>\n      <load-on-startup>11@g' /opt/yellowfin/appserver/webapps/ROOT/WEB-INF/web.xml
 fi
 
@@ -186,32 +186,32 @@ fi
 ################################################
 
 # Replace ${app-server-port} with environment variable $APP_SERVER_PORT
-if [ -z "${APP_SERVER_PORT}" ]; then
+if [[ -z "${APP_SERVER_PORT}" ]]; then
   sed -i 's/${app-server-port}/8080/g' /opt/yellowfin/appserver/conf/server.xml
-else
+else 
   sed -i 's/${app-server-port}/'"$APP_SERVER_PORT"'/g' /opt/yellowfin/appserver/conf/server.xml
 fi
 
 # Replace ${app-server-shutdown-port} with environment variable $APP_SHUTDOWN_PORT
-if [ -z "${APP_SHUTDOWN_PORT}" ]; then
+if [[ -z "${APP_SHUTDOWN_PORT}" ]]; then
   sed -i 's/${app-server-shutdown-port}/8083/g' /opt/yellowfin/appserver/conf/server.xml
-else
+else 
   sed -i 's/${app-server-shutdown-port}/'"$APP_SHUTDOWN_PORT"'/g' /opt/yellowfin/appserver/conf/server.xml
 fi
 
 # Insert Proxy Port with environment variable $PROXY_PORT
-if [ ! -z "${PROXY_PORT}" ]; then
-  sed -i '#maxThreads="150"#maxThreads="150" proxyPort='"$PROXY_PORT"'#g' /opt/yellowfin/appserver/conf/server.xml
+if [[ ! -z "${PROXY_PORT}" ]]; then
+  sed -i 's/maxThreads="150"/maxThreads="150" proxyPort="'"$PROXY_PORT"'"/g' /opt/yellowfin/appserver/conf/server.xml
 fi
 
 # Insert Proxy Scheme with environment variable $PROXY_SCHEME
-if [ ! -z "${PROXY_SCHEME}" ]; then
-  sed -i '#maxThreads="150"#maxThreads="150" scheme='"$PROXY_SCHEME"'#g' /opt/yellowfin/appserver/conf/server.xml
+if [[ ! -z "${PROXY_SCHEME}" ]]; then
+  sed -i 's/maxThreads="150"/maxThreads="150" scheme="'"$PROXY_SCHEME"'"/g' /opt/yellowfin/appserver/conf/server.xml
 fi
 
 # Insert Proxy Host with environment variable $PROXY_HOST
-if [ ! -z "${PROXY_HOST}" ]; then
-  sed -i '#maxThreads="150"#maxThreads="150" proxyHost='"$PROXY_HOST"'#g' /opt/yellowfin/appserver/conf/server.xml
+if [[ ! -z "${PROXY_HOST}" ]]; then
+  sed -i 's/maxThreads="150"/maxThreads="150" proxyName="'"$PROXY_HOST"'"/g' /opt/yellowfin/appserver/conf/server.xml
 fi
 
 ################################################
@@ -239,3 +239,6 @@ touch /opt/yellowfin/appserver/bin/docker_configuration_done
 echo "Docker Configuration Complete"
 
 fi
+
+
+
