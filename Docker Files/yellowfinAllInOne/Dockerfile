@@ -23,13 +23,25 @@
 # The installer can be downloaded during provisioning, or by providing the JAR file as part of image
 #######################################################################################################
 
-# From Postgres 12 Alpine Linux base image
-FROM alpine:3.7
+# From Ubuntu 20 base image
+FROM ubuntu:20.04
 LABEL maintainer="Yellowfin <support@yellowfin.bi>"
 LABEL description="Yellowfin All-In-One"
 
-# Install OS applications required for application installation
-RUN apk add unzip gzip tar gzip curl sed sudo openjdk8-jre ttf-dejavu postgresql
+# Timezone setup
+ENV TZ=Etc/GMT
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+# Install OS applications required for application installation and setup Java
+RUN apt update && apt install unzip tar curl sed ttf-dejavu fonts-dejavu \
+ fontconfig libasound2 libglib2.0-0  postgresql-12 sudo libpangoft2-1.0-0 -y
+
+#Configure Java 11 using Zulu 11 JDK
+RUN mkdir /usr/lib/jvm -p && cd /usr/lib/jvm/ && curl -o zulu11.tar.gz https://cdn.azul.com/zulu/bin/zulu11.41.23-ca-fx-jdk11.0.8-linux_x64.tar.gz \
+&& tar -xzvf zulu11.tar.gz && mv zulu11.41* zulu11-jdk/ && rm zulu11.tar.gz
+ENV JAVA_HOME=/usr/lib/jvm/zulu11-jdk/
+ENV PATH="$JAVA_HOME/bin:$PATH"
+
 
 #######################################################################################################
 # Fetch the Yellowfin installer
@@ -52,10 +64,8 @@ RUN curl -qL "{$(curl https://build-api.yellowfin.bi/fetch-latest-build)}" -o /t
 # Prepare directories for PostgreSQL and Yellowfin.
 #######################################################################################################
 
-# Prepare PostgreSQL and Yellowfin filesystem directories
-RUN mkdir /run/postgresdata && chmod g+s /run/postgresdata/ && chown -R postgres /run/postgresdata \
-&& mkdir /run/postgresql && chmod g+s /run/postgresql && chown -R postgres /run/postgresql \
-&& mkdir /opt && mkdir /opt/yellowfin && chmod a+w /opt/yellowfin
+# Prepare Yellowfin filesystem directories
+RUN mkdir -p /opt/yellowfin &&  chmod a+w /opt/yellowfin
 
 #######################################################################################################
 # Prepare Yellowfin Installation
@@ -75,17 +85,21 @@ RUN echo InstallPath=/opt/yellowfin > /tmp/silent-install.properties \
 && echo DatabaseName=yellowfin >> /tmp/silent-install.properties \
 && echo DatabasePort=5432 >> /tmp/silent-install.properties \
 && echo AppMemory=2048 >> /tmp/silent-install.properties \
-&& echo DatabaseDBAUser=postgres >> /tmp/silent-install.properties \
+&& echo DatabaseDBAUser=yellowfindba >> /tmp/silent-install.properties \
 && echo DatabaseDBAPassword=yellowfin >> /tmp/silent-install.properties \
-&& echo DatabaseUser=postgres >> /tmp/silent-install.properties \
+&& echo DatabaseUser=yellowfindba >> /tmp/silent-install.properties \
 && echo DatabasePassword=yellowfin >> /tmp/silent-install.properties \
 && cat /tmp/silent-install.properties
 
 # Start Postgres, Execute Installer and stop Postgres in single step
-RUN echo "Initializing PostgreSQL" && sudo -u postgres initdb -D /run/postgresdata \
-&& echo "Starting PostgreSQL" && sudo -u postgres pg_ctl -D /run/postgresdata/ -w start \
+RUN echo "Starting PostgreSQL" && pg_ctlcluster 12 main start  && pg_ctlcluster 12 main status \
+&& echo "Setting up PostgreSQL for Yellowfin Install" \
+&& echo "CREATE ROLE yellowfindba LOGIN SUPERUSER PASSWORD 'yellowfin';"  > user_setup.sql \
+&& sudo -u postgres psql < user_setup.sql \
 && echo "Installing Yellowfin" && java -jar /tmp/yellowfin.jar -silent /tmp/silent-install.properties \
-&& echo "Stopping PostgreSQL" && sudo -u postgres pg_ctl -D /run/postgresdata/ -w stop
+&& echo "Stopping PostgreSQL" && pg_ctlcluster 12 main stop \
+&& echo "Cleaning up files" && rm /tmp/yellowfin.jar
+
 
 # Mark management scripts as executable
 RUN chmod +x /opt/yellowfin/appserver/bin/catalina.sh /opt/yellowfin/appserver/bin/startup.sh /opt/yellowfin/appserver/bin/shutdown.sh
@@ -97,12 +111,14 @@ RUN chmod +x /opt/yellowfin/appserver/bin/catalina.sh /opt/yellowfin/appserver/b
 #######################################################################################################
 
 # Create docker-entry file, that starts PostgreSQL and then Yellowfin
-RUN echo sudo -u postgres pg_ctl -D /run/postgresdata/ -w start > /opt/docker-entry.sh \
+
+RUN echo pg_ctlcluster 12 main start > /opt/docker-entry.sh \
 && echo "echo Over-ride Memory: \$APP_MEMORY" >> /opt/docker-entry.sh \
 && echo "if [[ ! -z \"\${APP_MEMORY}\" ]]; then " >> /opt/docker-entry.sh \
 && echo " sed -i 's/-Xmx2048m/-Xmx'\"\$APP_MEMORY\"'m/g' /opt/yellowfin/appserver/bin/catalina.sh " >> /opt/docker-entry.sh \
 && echo fi  >> /opt/docker-entry.sh \
 && echo /opt/yellowfin/appserver/bin/catalina.sh run >> /opt/docker-entry.sh
+
 
 
 ENTRYPOINT ["/bin/sh", "/opt/docker-entry.sh"]
