@@ -199,20 +199,23 @@ else
   sed -i 's/${app-server-shutdown-port}/'"$APP_SHUTDOWN_PORT"'/g' /opt/yellowfin/appserver/conf/server.xml
 fi
 
+
 # Insert Proxy Port with environment variable $PROXY_PORT
 if [ ! -z "${PROXY_PORT}" ]; then
-  sed -i '#maxThreads="150"#maxThreads="150" proxyPort='"$PROXY_PORT"'#g' /opt/yellowfin/appserver/conf/server.xml
+  sed -i 's#maxThreads="150"#maxThreads="150" proxyPort="'"$PROXY_PORT"'"#g' /opt/yellowfin/appserver/conf/server.xml
 fi
 
 # Insert Proxy Scheme with environment variable $PROXY_SCHEME
 if [ ! -z "${PROXY_SCHEME}" ]; then
-  sed -i '#maxThreads="150"#maxThreads="150" scheme='"$PROXY_SCHEME"'#g' /opt/yellowfin/appserver/conf/server.xml
+  sed -i 's#maxThreads="150"#maxThreads="150" scheme="'"$PROXY_SCHEME"'"#g' /opt/yellowfin/appserver/conf/server.xml
 fi
+
 
 # Insert Proxy Host with environment variable $PROXY_HOST
 if [ ! -z "${PROXY_HOST}" ]; then
-  sed -i '#maxThreads="150"#maxThreads="150" proxyHost='"$PROXY_HOST"'#g' /opt/yellowfin/appserver/conf/server.xml
+  sed -i 's#maxThreads="150"#maxThreads="150" proxyHost="'"$PROXY_HOST"'"#g' /opt/yellowfin/appserver/conf/server.xml
 fi
+
 
 ################################################
 # Configuration changes to ROOT.xml
