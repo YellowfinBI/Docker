@@ -228,11 +228,30 @@ sed -i 's@${INSTALL_PATH}/${installer.warfilename}@/opt/yellowfin/appserver/weba
 # Configuration changes to log4j.properties
 ################################################
 
-# Replace {catalina.home}/ with /opt/yellowfin/appserver
-sed -i 's@${catalina.home}@/opt/yellowfin/appserver@g' /opt/yellowfin/appserver/webapps/ROOT/WEB-INF/log4j.properties
 
-# Replace ${installer.applogfilename}/ with yellowfin.log
-sed -i 's@${installer.applogfilename}@yellowfin.log@g' /opt/yellowfin/appserver/webapps/ROOT/WEB-INF/log4j.properties
+if [ -e "/opt/yellowfin/appserver/webapps/ROOT/WEB-INF/log4j.properties" ]; then
+	# Replace {catalina.home}/ with /opt/yellowfin/appserver
+	sed -i 's@${catalina.home}@/opt/yellowfin/appserver@g' /opt/yellowfin/appserver/webapps/ROOT/WEB-INF/log4j.properties
+	# Replace ${installer.applogfilename}/ with yellowfin.log
+	sed -i 's@${installer.applogfilename}@yellowfin.log@g' /opt/yellowfin/appserver/webapps/ROOT/WEB-INF/log4j.properties
+fi
+
+if [ -e "/opt/yellowfin/appserver/webapps/ROOT/WEB-INF/log4j2.xml" ]; then
+	# Replace {catalina.home}/ with /opt/yellowfin/appserver
+	sed -i 's@${catalina.home}@/opt/yellowfin/appserver@g' /opt/yellowfin/appserver/webapps/ROOT/WEB-INF/log4j2.xml
+	# Replace ${installer.applogfilename}/ with yellowfin.log
+	sed -i 's@${installer.applogfilename}@yellowfin.log@g' /opt/yellowfin/appserver/webapps/ROOT/WEB-INF/log4j2.xml
+fi
+
+################################################
+# Download additional libraries into WEB-INF/lib
+################################################
+
+# See if a URL for additional libraries has been passed
+if [ ! -z "${LIBRARY_ZIP}" ]; then
+  curl -qL $LIBRARY_ZIP -o /opt/yellowfin/appserver/bin/additional_libraries.zip
+  unzip /opt/yellowfin/appserver/bin/additional_libraries.zip -d /opt/yellowfin/appserver/webapps/ROOT/WEB-INF/lib
+fi
 
 ################################################
 # Write Completion Flag
