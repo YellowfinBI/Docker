@@ -6,7 +6,7 @@ This can be used in production, data is persisted in the external repository so 
 
 #### Other Deployment Options
 
-Modifying the DockerFile allows changes to be made to the image to handle particular custom deployment use-cases.
+Modifying the DockerFile allows changes to be made to the image to handle particular custom deployment use-cases. The DockerFile and other assets required for building the Docker image are available on GitHub at https://github.com/YellowfinBI/Docker
 
 
 Prerequisites
@@ -45,6 +45,8 @@ yellowfin-app-only:latest
 
 This will start the Yellowfin Application Only image with the default settings and expose Yellowfin on port 80 on the host. The connection details for the external Yellowfin repository database needs to be passed to image. It is assumed that the Yellowfin Repository will be installed with the standard Yellowfin installer prior to starting the Application Only docker container. The JDBC connection settings required for container startup can be obtained from the Yellowfin/appserver/webapps/ROOT/WEB-INF/web.xml file from the instance used to install the database.
 
+If the Yellowfin repository is in a database that requires user supplied JDBC drivers (such as Oracle or MySQL) then these drivers can be added to the Docker container with the LIBRARY_ZIP environmental variable.
+
 License Deployment
 ----------------------
 
@@ -76,6 +78,8 @@ Configuration Options can be passed to the docker containers via -e parameter.
 | Internal Cluster Network Adapter, CLUSTER_INTERFACE | Specify the docker interface to bind Cluster Messages to. Defaults to eth0, but this may need to be changed for Kubernetes and DockerSwarm | ```-e CLUSTER_INTERFACE=match-interface:eth1``` |
 | Background Processing Task Types, NODE_BACKGROUND_TASKS | Comma separated list of which background Task Types can be run on this node. NODE_PARALLEL_TASKS must also be updated if this item is specified. If unspecified, all Task Types will be enabled. | ```-e NODE_BACKGROUND_TASKS=FILTER_CACHE,ETL_PROCESS_TASK``` |
 | Background Task Processing Jobs, NODE_PARALLEL_TASKS | Comma separated list of the number of concurrent tasks for each Task Type that can be run on this node. The number of elements passed here must match the number of Task Types passed by NODE_BACKGROUND_TASKS | ```-e NODE_PARALLEL_TASKS=5,4``` |
+| Additional Libraries URL, LIBRARY_ZIP | URL to a Zip file that contains additional libraries to be extracted into lib folder of Yellowfin. This can be used to add additional JDBC drivers or custom plugins to Yellowfin. Make sure that the path is not included with zip entries in the archive. | ```-e LIBRARY_ZIP=http://lib-host/libraries.zip ``` |
+
 
 Where is Data Stored?
 ----------------------
