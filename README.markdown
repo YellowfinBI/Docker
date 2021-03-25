@@ -1,33 +1,36 @@
 Yellowfin Docker Images
 =========================
 
-Yellowfin has two pre-made docker images for different purposes:
+Yellowfin has two pre-made Docker images for different purposes:
 
-- Yellowfin All-In-One [Available Here](Docker%20Files/yellowfinAllInOne)
-- Yellowfin Application Only [Available Here](Docker%20Files/yellowfinAppOnly)
+- Yellowfin All-In-One [available here](Docker%20Files/yellowfinAllInOne).
+- Yellowfin Application Only [available here](Docker%20Files/yellowfinAppOnly).
 
 #### Yellowfin All-In-One
 
-The Yellowfin All-In-One image contains the Yellowfin application and repository database. This can be used for short trials and demonstrations. This image will not persist data outside of the docker container, and all content will be lost when the container is shutdown. This docker image cannot be used in a clustered environment.
+The Yellowfin All-In-One image contains the Yellowfin application and repository database. This can be used for short trials and demonstrations. This image will not persist data outside of the Docker container, and all content will be lost when the container is shutdown. This Docker image cannot be used in a clustered environment.
 
-Yellowfin All-In-One Docker Hub Repository [Available Here](https://hub.docker.com/r/yellowfinbi/yellowfin-all-in-one)
+A prebuilt version of this image can be found on Docker Hub [here](https://hub.docker.com/r/yellowfinbi/yellowfin-all-in-one).
 
 #### Yellowfin Application Only
 
 The Yellowfin App Only image contains only the Yellowfin application, and can be connected to an existing repository database. This image can be used as a single instance, or as a cluster node.
 This can be used in production, data is persisted in the external repository so that no data is lost when containers are shutdown.
 
-Yellowfin App-Only Docker Hub Repository [Available Here](https://hub.docker.com/r/yellowfinbi/yellowfin-app-only)
+A prebuilt version of this image can be found on Docker Hub [here](https://hub.docker.com/r/yellowfinbi/yellowfin-app-only).
 
 #### Other Deployment Options
 
 Dockerfiles for the above images can be modified to customise an image for particular use-cases.
 
+#### Supporting Documentation
+
+Yellowfin has produced a white paper to accompany the Docker images, which explores how these images can be deployed. The white paper, Yellowfin on Docker and Kubernetes White Paper, can be found [here](Yellowfin%20on%20Docker%20and%20Kubernetes%20White%20Paper.pdf).
 
 Prerequisites
 --------------
 
-A Docker installation is required to run the Yellowfin docker containers.
+A Docker installation is required to run the Yellowfin Docker containers.
 Please see the official [Docker installation guides](https://docs.docker.com/install)
 
 The Application Only image requires that a Yellowfin Repository be pre-installed on an accessible host.
@@ -54,7 +57,7 @@ sudo docker run -d -p 80:8080 \
 yellowfin-app-only:latest
 ```
 
-This will start the Yellowfin Application Only image with the default settings and expose Yellowfin on port 80 on the host. The connection details for the external Yellowfin repository database needs to be passed to image. It is assumed that the Yellowfin Repository will be installed with the standard Yellowfin installer prior to starting the Application Only docker container. The JDBC connection settings required for container startup can be obtained from the Yellowfin/appserver/webapps/ROOT/WEB-INF/web.xml file from the instance used to install the database.
+This will start the Yellowfin Application Only image with the default settings and expose Yellowfin on port 80 on the host. The connection details for the external Yellowfin repository database needs to be passed to image. It is assumed that the Yellowfin Repository will be installed with the standard Yellowfin installer prior to starting the Application Only Docker container. The JDBC connection settings required for container startup can be obtained from the Yellowfin/appserver/webapps/ROOT/WEB-INF/web.xml file from the instance used to install the database.
 
 License Deployment
 ----------------------
@@ -71,7 +74,7 @@ As an existing Yellowfin Repository database is used for the Yellowfin Applicati
 Configuration Options
 ----------------------
 
-Configuration Options can be passed to the docker containers via -e parameter.
+Configuration Options can be passed to the Docker containers via -e parameter.
 
 #### Configuration Options for the All-In-One image
 
@@ -100,7 +103,7 @@ Configuration Options can be passed to the docker containers via -e parameter.
 | Proxy Host, PROXY_HOST | External Proxy Host or IP address | ```-e PROXY_HOST=reporting.company.com``` |
 | External Cluster Address, CLUSTER_ADDRESS | External Cluster Address for Cluster Messaging. Usually the host or IP address of the Docker Host | ```-e CLUSTER_ADDRESS=10.10.10.23``` |
 | External Cluster Port, CLUSTER_PORT | A Unique TCP port for this container to receive Cluster Messages from other nodes | ```-e CLUSTER_PORT=7801``` |
-| Internal Cluster Network Adapter, CLUSTER_INTERFACE | Specify the docker interface to bind Cluster Messages to. Defaults to eth0, but this may need to be changed for Kubernetes and DockerSwarm | ```-e CLUSTER_INTERFACE=eth1``` |
+| Internal Cluster Network Adapter, CLUSTER_INTERFACE | Specify the Docker interface to bind Cluster Messages to. Defaults to eth0, but this may need to be changed for Kubernetes and DockerSwarm | ```-e CLUSTER_INTERFACE=eth1``` |
 | Background Processing Task Types, NODE_BACKGROUND_TASKS | Comma separated list of which background Task Types can be run on this node. NODE_PARALLEL_TASKS must also be updated if this item is specified. If unspecified, all Task Types will be enabled. | ```-e NODE_BACKGROUND_TASKS=FILTER_CACHE,ETL_PROCESS_TASK``` |
 | Background Task Processing Jobs, NODE_PARALLEL_TASKS | Comma separated list of the number of concurrent tasks for each Task Type that can be run on this node. The number of elements passed here must match the number of Task Types passed by NODE_BACKGROUND_TASKS | ```-e NODE_PARALLEL_TASKS=5,4``` |
 
@@ -110,7 +113,7 @@ Where is Data Stored?
 
 #### Yellowfin All-In-One:
 
-Yellowfin data/content is stored in the docker container itself. Terminating the container will result in data loss.
+Yellowfin data/content is stored in the Docker container itself. Terminating the container will result in data loss.
 
 #### Yellowfin Application Only:
 
@@ -120,7 +123,7 @@ Yellowfin data/content is stored in the linked repository database. Terminating 
 After Starting the Container
 -----------------------------
 
-After starting a container, use a browser to connect to the docker host's TCP port that has been mapped container's application port.
+After starting a container, use a browser to connect to the Docker host's TCP port that has been mapped container's application port.
 
 For example:
 ```bash
@@ -132,7 +135,7 @@ Connect to:
 http://dockerhost:9090
 
 
-There may be a slight delay before the browser responds after the docker container is started.
+There may be a slight delay before the browser responds after the Docker container is started.
 
 
 
@@ -151,7 +154,7 @@ The Yellowfin Repository database should be upgraded manually, and a new version
 Proxy Considerations
 ----------------------
 
-If the docker container is hosted behind a webserver, loadbalancer, or proxy then the Proxy Host, Proxy Scheme and Proxy Port paramters may need to be used to help Yellowfin generate URLs. These parameters configure the external address and scheme for the Yellowfin application. This configuration is only available for the Yellowfin Application Only docker image.
+If the Docker container is hosted behind a webserver, loadbalancer, or proxy then the Proxy Host, Proxy Scheme and Proxy Port paramters may need to be used to help Yellowfin generate URLs. These parameters configure the external address and scheme for the Yellowfin application. This configuration is only available for the Yellowfin Application Only Docker image.
 
 #### Proxy Host
 
@@ -169,11 +172,11 @@ This can be HTTP or HTTPS. Set this to HTTPS if a proxy is enabling SSL security
 Clustering Considerations
 ----------------------
 
-The Yellowfin Application Only docker image has Respository Clustering enabled. This will allow multiple application nodes that share the same Repository Database to register as a cluster member. Each cluster member needs a unique TCP end-point for internode communications, and this will need to be set when the container is started. This can be configured with the CLUSTER_ADDRESS and CLUSTER_PORT configuration parameters.
+The Yellowfin Application Only Docker image has Respository Clustering enabled. This will allow multiple application nodes that share the same Repository Database to register as a cluster member. Each cluster member needs a unique TCP end-point for internode communications, and this will need to be set when the container is started. This can be configured with the CLUSTER_ADDRESS and CLUSTER_PORT configuration parameters.
 
 #### Cluster Address
 
-This will be an address that is resolvable from all docker nodes (which may be running on separate docker hosts). This will usually be set to the hostname or IP address of the docker host. Multiple Yellowfin docker containers running on the same host can share the same Cluster Address, but will need to have a unique TCP port for communication.
+This will be an address that is resolvable from all Docker nodes (which may be running on separate Docker hosts). This will usually be set to the hostname or IP address of the Docker host. Multiple Yellowfin Docker containers running on the same host can share the same Cluster Address, but will need to have a unique TCP port for communication.
 
 #### Cluster Port
 
@@ -182,7 +185,7 @@ This is the TCP port that is exposed to the outside network for internode commun
 
 #### 3 Node Cluster Example
 
-Running three nodes on a single host requires that external exposed ports do not conflict. This means assigning unique ports for both web access and internode communication across all containers. The internal ports for web access and internode communication are 8080 and 7800 respectively, but using the -p parameter, these should be mapped to non-conflicting ports on the docker host.
+Running three nodes on a single host requires that external exposed ports do not conflict. This means assigning unique ports for both web access and internode communication across all containers. The internal ports for web access and internode communication are 8080 and 7800 respectively, but using the -p parameter, these should be mapped to non-conflicting ports on the Docker host.
 
 Node 1:
 
@@ -246,13 +249,13 @@ This allows you to access log files and system settings.
 sudo docker exec -it <docker containerid> /bin/sh
 ```
 
-The docker containerid can be obtained from the command:
+The Docker containerid can be obtained from the command:
 
 ```bash
 sudo docker container list
 ```
 
-If settings are changed in a running docker container, Yellowfin may require restarting. This can be done with the command:
+If settings are changed in a running Docker container, Yellowfin may require restarting. This can be done with the command:
 
 ```bash
 sudo docker restart <docker containerid>
