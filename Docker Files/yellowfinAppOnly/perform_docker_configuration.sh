@@ -213,7 +213,7 @@ fi
 
 # Insert Proxy Host with environment variable $PROXY_HOST
 if [ ! -z "${PROXY_HOST}" ]; then
-  sed -i 's#maxThreads="150"#maxThreads="150" proxyHost="'"$PROXY_HOST"'"#g' /opt/yellowfin/appserver/conf/server.xml
+  sed -i 's#maxThreads="150"#maxThreads="150" proxyName="'"$PROXY_HOST"'"#g' /opt/yellowfin/appserver/conf/server.xml
 fi
 
 
