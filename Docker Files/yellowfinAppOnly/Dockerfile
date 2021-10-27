@@ -45,7 +45,7 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # Install OS applications required for application installation and setup Java
 RUN apt-get update && apt-get install unzip tar curl sed ttf-dejavu fonts-dejavu \
- fontconfig libasound2 libglib2.0-0 libpangoft2-1.0-0 -y
+ fontconfig libasound2 libglib2.0-0 libpangoft2-1.0-0 -y && echo "fs.file-max = 10240" >> /etc/sysctl.conf
  
 #Configure Java 11 using Zulu 11 JDK
 RUN mkdir /usr/lib/jvm -p && cd /usr/lib/jvm/ && curl -o zulu11.tar.gz https://cdn.azul.com/zulu/bin/zulu11.41.23-ca-fx-jdk11.0.8-linux_x64.tar.gz \
