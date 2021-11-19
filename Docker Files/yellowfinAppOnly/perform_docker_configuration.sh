@@ -205,9 +205,9 @@ if [ ! -z "${PROXY_SCHEME}" ]; then
   pdfScheme=$PROXY_SCHEME
 fi
 
-pdfUrl="${pdfScheme}://${pdfHost}:${pdfPort}"
+pdfUrl="${pdfScheme}://${pdfHost}:${pdfPort}/"
 echo "PDF Url will be set to ${pdfUrl}"
-sed -i 's@<load-on-startup>7</load-on-startup>@<init-param>\n <param-name>PdfUrl</param-name>\n <param-value>'$pdfUrl'/</param-value> \n </init-param> \n <load-on-startup>7</load-on-startup> @g'  /opt/yellowfin/appserver/webapps/ROOT/WEB-INF/web.xml
+sed -i 's@<load-on-startup>7</load-on-startup>@<init-param>\n <param-name>PdfUrl</param-name>\n <param-value>'$pdfUrl'</param-value> \n </init-param> \n <load-on-startup>7</load-on-startup> @g'  /opt/yellowfin/appserver/webapps/ROOT/WEB-INF/web.xml
 
 
 ################################################
