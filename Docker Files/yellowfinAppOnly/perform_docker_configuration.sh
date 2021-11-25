@@ -1,4 +1,3 @@
-
 #!/bin/sh
 
 COMPLETION_FILE=/opt/yellowfin/appserver/bin/docker_configuration_done
@@ -179,6 +178,36 @@ if [ -z "${NODE_PARALLEL_TASKS}" ]; then
 else
   sed -i 's@<load-on-startup>11@ <init-param>\n             <param-name>MaxParallelTaskCounts</param-name>\n             <param-value>'"$NODE_PARALLEL_TASKS"'</param-value>\n       </init-param>\n      <load-on-startup>11@g' /opt/yellowfin/appserver/webapps/ROOT/WEB-INF/web.xml
 fi
+
+################################################
+# PDF URL fix - web.xml
+################################################
+
+pdfPort=8080
+pdfHost=localhost
+pdfScheme=http
+
+if [ ! -z "${PROXY_PORT}" ]; then
+  ## Set pdfPort to the Proxy Host Port
+  pdfPort=$PROXY_PORT
+elif [ ! -z "${APP_SERVER_PORT}" ]; then
+  ## Set pdfPort to the App Server port
+  pdfPort=$APP_SERVER_PORT
+fi
+
+if [ ! -z "${PROXY_HOST}" ]; then
+  ## Set pdfHost to the Proxy Host
+  pdfHost=$PROXY_HOST
+fi
+
+if [ ! -z "${PROXY_SCHEME}" ]; then
+  ## Set pdfScheme to the scheme used by the Proxy Host
+  pdfScheme=$PROXY_SCHEME
+fi
+
+pdfUrl="${pdfScheme}://${pdfHost}:${pdfPort}/"
+echo "PDF Url will be set to ${pdfUrl}"
+sed -i 's@<load-on-startup>7</load-on-startup>@<init-param>\n <param-name>PdfUrl</param-name>\n <param-value>'$pdfUrl'</param-value> \n </init-param> \n <load-on-startup>7</load-on-startup> @g'  /opt/yellowfin/appserver/webapps/ROOT/WEB-INF/web.xml
 
 
 ################################################
