@@ -37,8 +37,8 @@ RUN apt-get update && apt-get install unzip tar curl sed ttf-dejavu fonts-dejavu
  fontconfig libasound2 libglib2.0-0  postgresql-12 sudo libpangoft2-1.0-0 -y
 
 #Configure Java 11 using Zulu 11 JDK
-RUN mkdir /usr/lib/jvm -p && cd /usr/lib/jvm/ && curl -o zulu11.tar.gz https://cdn.azul.com/zulu/bin/zulu11.41.23-ca-fx-jdk11.0.8-linux_x64.tar.gz \
-&& tar -xzvf zulu11.tar.gz && mv zulu11.41* zulu11-jdk/ && rm zulu11.tar.gz
+RUN mkdir /usr/lib/jvm -p && cd /usr/lib/jvm/ && curl -o zulu11.tar.gz https://cdn.azul.com/zulu/bin/zulu11.52.13-ca-fx-jdk11.0.13-linux_x64.tar.gz \
+&& tar -xzvf zulu11.tar.gz && mv zulu11.52* zulu11-jdk/ && rm zulu11.tar.gz
 ENV JAVA_HOME=/usr/lib/jvm/zulu11-jdk/
 ENV PATH="$JAVA_HOME/bin:$PATH"
 
