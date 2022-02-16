@@ -56,6 +56,9 @@ sed -i 's/${installer.webapp.url}/\/opt\/yellowfin\/appserver\/webapps\/ROOT/g' 
 # Replace ${installer.additional.bof.settings} with ""
 sed -i 's/${installer.additional.bof.settings}//g' /opt/yellowfin/appserver/webapps/ROOT/WEB-INF/web.xml
 
+# Replace ${jdbc-conn-properties} with ""
+sed -i 's/${jdbc-conn-properties}//g' /opt/yellowfin/appserver/webapps/ROOT/WEB-INF/web.xml
+
 # Replace <param-value>${installer.appname} Connection Pool</param-value> with "<param-value>Connection Pool</param-value>"
 sed -i 's/<param-value>${installer.appname} Connection Pool<\/param-value>/<param-value>Connection Pool<\/param-value>/g' /opt/yellowfin/appserver/webapps/ROOT/WEB-INF/web.xml
 
@@ -245,6 +248,11 @@ if [ ! -z "${PROXY_HOST}" ]; then
   sed -i 's#maxThreads="150"#maxThreads="150" proxyName="'"$PROXY_HOST"'"#g' /opt/yellowfin/appserver/conf/server.xml
 fi
 
+# Insert Secure attribute with value of environment variable $SECURE_ENABLED
+if [ ! -z "${SECURE_ENABLED}" ]; then
+  sed -i 's#maxThreads="150"#maxThreads="150" secure="'"$SECURE_ENABLED"'"#g' /opt/yellowfin/appserver/conf/server.xml
+fi
+
 
 ################################################
 # Configuration changes to ROOT.xml
@@ -253,8 +261,19 @@ fi
 # Replace ${INSTALL_PATH}/${installer.warfilename} with /opt/yellowfin/appserver/webapps/ROOT
 sed -i 's@${INSTALL_PATH}/${installer.warfilename}@/opt/yellowfin/appserver/webapps/ROOT@g' /opt/yellowfin/appserver/conf/Catalina/localhost/ROOT.xml
 
+
 ################################################
-# Configuration changes to log4j.properties
+# Configuration changes to context.xml
+################################################
+
+# Insert Same-Site Cookie Mode into context.xml
+if [ ! -z "${SAMESITE_COOKIE_MODE}" ]; then
+	sed -i 's@<Context>@<Context>\n    <CookieProcessor sameSiteCookies="'"$SAMESITE_COOKIE_MODE"'" />@g' /opt/yellowfin/appserver/conf/context.xml
+fi
+
+
+################################################
+# Configuration changes to log4j settings
 ################################################
 
 
@@ -263,13 +282,24 @@ if [ -e "/opt/yellowfin/appserver/webapps/ROOT/WEB-INF/log4j.properties" ]; then
 	sed -i 's@${catalina.home}@/opt/yellowfin/appserver@g' /opt/yellowfin/appserver/webapps/ROOT/WEB-INF/log4j.properties
 	# Replace ${installer.applogfilename}/ with yellowfin.log
 	sed -i 's@${installer.applogfilename}@yellowfin.log@g' /opt/yellowfin/appserver/webapps/ROOT/WEB-INF/log4j.properties
+
+	if [ ! -z "${LOG_LEVEL}" ]; then
+		sed -i 's@$# log4j.category.com.hof=DEBUG@log4j.category.com.hof='"$LOG_LEVEL"'@g' /opt/yellowfin/appserver/webapps/ROOT/WEB-INF/log4j.properties
+	fi
+
 fi
+
+
 
 if [ -e "/opt/yellowfin/appserver/webapps/ROOT/WEB-INF/log4j2.xml" ]; then
 	# Replace {catalina.home}/ with /opt/yellowfin/appserver
 	sed -i 's@${catalina.home}@/opt/yellowfin/appserver@g' /opt/yellowfin/appserver/webapps/ROOT/WEB-INF/log4j2.xml
 	# Replace ${installer.applogfilename}/ with yellowfin.log
 	sed -i 's@${installer.applogfilename}@yellowfin.log@g' /opt/yellowfin/appserver/webapps/ROOT/WEB-INF/log4j2.xml
+	
+	if [ ! -z "${LOG_LEVEL}" ]; then
+		sed -i 's@INFO@'"$LOG_LEVEL"'@g' /opt/yellowfin/appserver/webapps/ROOT/WEB-INF/log4j2.xml
+	fi
 fi
 
 ################################################
@@ -277,9 +307,17 @@ fi
 ################################################
 
 # See if a URL for additional libraries has been passed
+# The contents of the zip file will be unzipped into the WEB-INF/lib folder.
 if [ ! -z "${LIBRARY_ZIP}" ]; then
   curl -qL $LIBRARY_ZIP -o /opt/yellowfin/appserver/bin/additional_libraries.zip
   unzip /opt/yellowfin/appserver/bin/additional_libraries.zip -d /opt/yellowfin/appserver/webapps/ROOT/WEB-INF/lib
+fi
+
+# See if a URL for additional content has been passed
+# The contents of the zip file will be unzipped into the ROOT folder, allowing content to be unzipped into child folders.
+if [ ! -z "${CONTENT_ZIP}" ]; then
+  curl -qL $CONTENT_ZIP -o /opt/yellowfin/appserver/bin/additional_content.zip
+  unzip /opt/yellowfin/appserver/bin/additional_content.zip -d /opt/yellowfin/appserver/webapps/ROOT
 fi
 
 ################################################
