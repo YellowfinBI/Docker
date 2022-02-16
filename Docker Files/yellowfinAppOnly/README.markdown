@@ -65,6 +65,7 @@ Configuration Options can be passed to the docker containers via -e parameter.
 | Repository Username, JDBC_CONN_USER| Specify the Database User required to access the Repository Database (Required) | ```-e JDBC_CONN_USER=dba``` |
 | Repository Password, JDBC_CONN_PASS | Specify the Database Password required to access the Repository Database. This can be encrypted. (Required) |  ```-e JDBC_CONN_PASS=secret``` |
 | Application Memory, APP_MEMORY | Specify the number of megabytes of memory to be assigned to the Yellowfin application. If unset, Yellowfin will use the Java default (usually 25% of System RAM)  |  ```-e APP_MEMORY=4096 ``` |
+| Application Log Verbosity, LOG_LEVEL | Specify the verbosity of the application logs (INFO/DEBUG/ERROR/WARN/TRACE) (Default: INFO)|  ```-e LOG_LEVEL=DEBUG ``` |
 | DB Password Encrypted, JDBC_CONN_ENCRYPTED | Specify whether the Database Password is encrypted (true/false) | ```-e JDBC_CONN_ENCRYPTED=true ```|
 | Connection Pool Size, JDBC_MAX_COUNT | Specify the maximum size of the Repository Database connection pool. (Default: 25) | ```-e JDBC_MAX_COUNT=25``` |
 | Default Welcome Page, WELCOME_PAGE | Specify the default index page.  | ```-e WELCOME_PAGE=custom_index.jsp``` |
@@ -73,12 +74,15 @@ Configuration Options can be passed to the docker containers via -e parameter.
 | Proxy Port, PROXY_PORT | External Proxy Port | ```-e PROXY_PORT=443``` |
 | Proxy Scheme, PROXY_SCHEME | External Proxy Scheme (http/https) | ```-e PROXY_SCHEME=https``` |
 | Proxy Host, PROXY_HOST | External Proxy Host or IP address | ```-e PROXY_HOST=reporting.company.com``` |
+| Secure Flag, SECURE_ENABLED | Enable the secure Connector flag (true/false) (Default: false) | ```-e SECURE_ENABLED=true``` |
+| Same-Site Cookie Mode, SAMESITE_COOKIE_MODE | Configure Same-Site Cookie behaviour (unset/none/lax/strict) (Default: unset) | ```-e SAMESITE_COOKIE_MODE=none``` |
 | External Cluster Address, CLUSTER_ADDRESS | External Cluster Address for Cluster Messaging. Usually the host or IP address of the Docker Host | ```-e CLUSTER_ADDRESS=10.10.10.23``` |
 | External Cluster Port, CLUSTER_PORT | A Unique TCP port for this container to receive Cluster Messages from other nodes | ```-e CLUSTER_PORT=7801``` |
 | Internal Cluster Network Adapter, CLUSTER_INTERFACE | Specify the docker interface to bind Cluster Messages to. Defaults to eth0, but this may need to be changed for Kubernetes and DockerSwarm | ```-e CLUSTER_INTERFACE=match-interface:eth1``` |
 | Background Processing Task Types, NODE_BACKGROUND_TASKS | Comma separated list of which background Task Types can be run on this node. NODE_PARALLEL_TASKS must also be updated if this item is specified. If unspecified, all Task Types will be enabled. | ```-e NODE_BACKGROUND_TASKS=FILTER_CACHE,ETL_PROCESS_TASK``` |
 | Background Task Processing Jobs, NODE_PARALLEL_TASKS | Comma separated list of the number of concurrent tasks for each Task Type that can be run on this node. The number of elements passed here must match the number of Task Types passed by NODE_BACKGROUND_TASKS | ```-e NODE_PARALLEL_TASKS=5,4``` |
 | Additional Libraries URL, LIBRARY_ZIP | URL to a Zip file that contains additional libraries to be extracted into lib folder of Yellowfin. This can be used to add additional JDBC drivers or custom plugins to Yellowfin. Make sure that the path is not included with zip entries in the archive. | ```-e LIBRARY_ZIP=http://lib-host/libraries.zip ``` |
+| Additional Content URL, CONTENT_ZIP | URL to a Zip file that contains additional content to be extracted into ROOT folder of Yellowfin. This can be used to add additional styles, images, JSP files, and libraries to Yellowfin. The Zip file can contain subdirectories, so that content can be delivered into multiple subfolders in the ROOT directory. | ```-e CONTENT_ZIP=http://lib-host/contents.zip ``` |
 
 
 Where is Data Stored?
@@ -110,7 +114,6 @@ http://dockerhost:9090
 There may be a slight delay before the browser responds after the docker container is started.
 
 
-
 Upgrading Yellowfin
 --------------------
 
@@ -132,7 +135,29 @@ This is the TCP port that users will connect on when accessing Yellowfin via the
 
 #### Proxy Scheme
 
-This can be HTTP or HTTPS. Set this to HTTPS if a proxy is enabling SSL security for non-SSL enabled Yellowfin nodes.
+This can be HTTP or HTTPS. Set this to HTTPS if a proxy is enabling SSL security for non-SSL enabled Yellowfin nodes. This is used for generating redirects with the correct scheme for the environment.
+
+#### Secure Flag
+
+Depending on the nature of the proxy, the secure flag may need to be enabled. This allows the application to process requests as if called from a secure end-point.
+
+
+Same-Site Cookies
+----------------------
+
+If content from the Yellowfin environment is to be embedded on external sites with different domains, then changes may need to be made to the Same-Site Cookie configuration. 
+
+Options for SAMESITE_COOKIE_MODE are defined here:
+
+ - If value is __unset__ then the same-site cookie attribute won't be set. This is the default value.
+
+ - If value is __none__ then the same-site cookie attribute will be set and the cookie will always be sent in cross-site requests.
+
+ - If value is __lax__ then the browser only sends the cookie in same-site requests and cross-site top level GET requests.
+
+ - If value is __strict__ then the browser prevents sending the cookie in any cross-site request.
+
+(From: [Apache Tomcat Same-Site Cookie configuration](https://tomcat.apache.org/tomcat-9.0-doc/config/cookie-processor.html))
 
 
 Clustering Considerations
