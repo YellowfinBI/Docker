@@ -35,10 +35,11 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 RUN apt-get update -y && apt-get -y install openjdk-8-jre
 
-### Copy i4-core.jar into the container. 
+### Copy i4-core.jar and i4-adapter nto the container. 
 ### (This can be sourced from an installation of Yellowfin in /Yellowfin/appserver/webapps/ROOT/WEB-INF/lib )
-### This process is only compatible with i4-core versions from Yellowfin 9.7 and later
+### This process is only compatible with i4-core/i4-adapter versions from Yellowfin 9.7 and later
 COPY i4-core.jar /opt/i4-core.jar
+COPY i4-adapter.jar /opt/i4-adapter.jar
 
 ### Copy and additional drivers required to access the repository database.
 ### The driver for the repository can be sourced from the /Yellowfin/appserver/webapps/ROOT/WEB-INF/lib folder in a Yellowfin installation
@@ -56,7 +57,8 @@ RUN echo "#!/bin/sh" > /opt/configure.sh \
 && echo "java com.hof.standalone.ModifyConfiguration \\" >> /opt/configure.sh \ 
 && echo "jdbcUser:\$DATABASE_USER \\" >> /opt/configure.sh \
 && echo "jdbcPassword:\$DATABASE_PASSWORD \\" >> /opt/configure.sh \
-&& echo "jdbcUrl:\$DATABASE_URL " >> /opt/configure.sh 
+&& echo "jdbcUrl:\$DATABASE_URL \\" >> /opt/configure.sh \
+&& echo "ConcealmentProvider:\$CONCEALMENT_PROVIDER " >> /opt/configure.sh 
 
 
 ENTRYPOINT ["/bin/bash", "/opt/configure.sh"]
