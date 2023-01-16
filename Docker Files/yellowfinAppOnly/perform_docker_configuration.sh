@@ -1,5 +1,10 @@
 #!/bin/sh
 
+if [ -z "${SKIP_OS_PACKAGE_UPGRADE}" ] || [ "${SKIP_OS_PACKAGE_UPGRADE}" = "FALSE" ] ; then
+    echo "Updating Operating System Packages"
+	apt-get upgrade -y
+fi
+
 COMPLETION_FILE=/opt/yellowfin/appserver/bin/docker_configuration_done
 if test -f "$COMPLETION_FILE"; then
     echo "Docker Configuration Error: $COMPLETION_FILE already exists, exiting"
