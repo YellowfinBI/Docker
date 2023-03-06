@@ -83,6 +83,8 @@ Configuration Options can be passed to the docker containers via -e parameter.
 | Background Task Processing Jobs, NODE_PARALLEL_TASKS | Comma separated list of the number of concurrent tasks for each Task Type that can be run on this node. The number of elements passed here must match the number of Task Types passed by NODE_BACKGROUND_TASKS | ```-e NODE_PARALLEL_TASKS=5,4``` |
 | Additional Libraries URL, LIBRARY_ZIP | URL to a Zip file that contains additional libraries to be extracted into lib folder of Yellowfin. This can be used to add additional JDBC drivers or custom plugins to Yellowfin. Make sure that the path is not included with zip entries in the archive. | ```-e LIBRARY_ZIP=http://lib-host/libraries.zip ``` |
 | Additional Content URL, CONTENT_ZIP | URL to a Zip file that contains additional content to be extracted into ROOT folder of Yellowfin. This can be used to add additional styles, images, JSP files, and libraries to Yellowfin. The Zip file can contain subdirectories, so that content can be delivered into multiple subfolders in the ROOT directory. | ```-e CONTENT_ZIP=http://lib-host/contents.zip ``` |
+| Skip OS Package Updates, SKIP_OS_PACKAGE_UPGRADE | Set SKIP_OS_PACKAGE_UPGRADE=TRUE to prevent an operating system package update on container startup | ```-e SKIP_OS_PACKAGE_UPGRADE=TRUE``` |
+
 
 
 Where is Data Stored?

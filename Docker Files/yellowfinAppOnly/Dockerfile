@@ -34,8 +34,8 @@
 # The installer can be downloaded during provisioning, or by providing the JAR file as part of image
 #######################################################################################################
 
-# From Ubuntu 20 base image
-FROM ubuntu:20.04
+# From Ubuntu LTS base image
+FROM ubuntu:22.04
 LABEL maintainer="Yellowfin <support@yellowfin.bi>"
 LABEL description="Yellowfin Application Only"
 
@@ -44,12 +44,12 @@ ENV TZ=Etc/GMT
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # Install OS applications required for application installation and setup Java
-RUN apt-get update && apt-get install unzip tar curl sed ttf-dejavu fonts-dejavu \
+RUN apt-get update && apt-get upgrade && apt-get install unzip tar curl sed fonts-dejavu \
  fontconfig libasound2 libglib2.0-0 libpangoft2-1.0-0 -y && echo "fs.file-max = 10240" >> /etc/sysctl.conf
  
 #Configure Java 11 using Zulu 11 JDK
-RUN mkdir /usr/lib/jvm -p && cd /usr/lib/jvm/ && curl -o zulu11.tar.gz https://cdn.azul.com/zulu/bin/zulu11.52.13-ca-fx-jdk11.0.13-linux_x64.tar.gz \
-&& tar -xzvf zulu11.tar.gz && mv zulu11.52* zulu11-jdk/ && rm zulu11.tar.gz
+RUN mkdir /usr/lib/jvm -p && cd /usr/lib/jvm/ && curl -o zulu11.tar.gz https://cdn.azul.com/zulu/bin/zulu11.60.19-ca-fx-jdk11.0.17-linux_x64.tar.gz \
+&& tar -xzvf zulu11.tar.gz && mv zulu11.60* zulu11-jdk/ && rm zulu11.tar.gz
 ENV JAVA_HOME=/usr/lib/jvm/zulu11-jdk/
 ENV PATH="$JAVA_HOME/bin:$PATH"
 
