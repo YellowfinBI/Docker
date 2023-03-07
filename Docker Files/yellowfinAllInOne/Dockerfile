@@ -33,7 +33,7 @@ ENV TZ=Etc/GMT
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # Install OS applications required for application installation and setup Java
-RUN apt-get update && apt-get upgrade -y && apt-get install unzip tar curl sed fonts-dejavu \
+RUN apt-get update -y && apt-get upgrade -y && apt-get install -y unzip tar curl sed fonts-dejavu \
  fontconfig libasound2 libglib2.0-0  postgresql-14 sudo libpangoft2-1.0-0 -y
 
 #Configure Java 11 using Zulu 11 JDK
