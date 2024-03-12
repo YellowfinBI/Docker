@@ -1,5 +1,7 @@
 #!/bin/sh
 
+echo dockerhostnamefile > /etc/hostname
+
 if [ -z "${SKIP_OS_PACKAGE_UPGRADE}" ] || [ "${SKIP_OS_PACKAGE_UPGRADE}" = "FALSE" ] ; then
     echo "Updating Operating System Packages"
 	apt-get upgrade -y
