@@ -188,30 +188,12 @@ else
 fi
 
 ################################################
-# PDF URL fix - web.xml
+# PDF URL fix - web.xml - Connect to 9090 web connector
 ################################################
 
-pdfPort=8080
+pdfPort=9090
 pdfHost=localhost
 pdfScheme=http
-
-if [ ! -z "${PROXY_PORT}" ]; then
-  ## Set pdfPort to the Proxy Host Port
-  pdfPort=$PROXY_PORT
-elif [ ! -z "${APP_SERVER_PORT}" ]; then
-  ## Set pdfPort to the App Server port
-  pdfPort=$APP_SERVER_PORT
-fi
-
-if [ ! -z "${PROXY_HOST}" ]; then
-  ## Set pdfHost to the Proxy Host
-  pdfHost=$PROXY_HOST
-fi
-
-if [ ! -z "${PROXY_SCHEME}" ]; then
-  ## Set pdfScheme to the scheme used by the Proxy Host
-  pdfScheme=$PROXY_SCHEME
-fi
 
 pdfUrl="${pdfScheme}://${pdfHost}:${pdfPort}/"
 echo "PDF Url will be set to ${pdfUrl}"
@@ -257,6 +239,12 @@ fi
 if [ ! -z "${SECURE_ENABLED}" ]; then
   sed -i 's#maxThreads="150"#maxThreads="150" secure="'"$SECURE_ENABLED"'"#g' /opt/yellowfin/appserver/conf/server.xml
 fi
+
+
+# Configure another connector for PDF generation on port 9090
+#  <Connector port="9090" protocol="HTTP/1.1" connectionTimeout="20000" />
+
+sed -i 's@<Service name="Catalina">@<Service name="Catalina">\n\n     <Connector port="9090" protocol="HTTP/1.1" connectionTimeout="20000" />\n@g' /opt/yellowfin/appserver/conf/server.xml
 
 
 ################################################
