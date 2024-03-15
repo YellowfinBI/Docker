@@ -117,7 +117,7 @@ RUN echo pg_ctlcluster 16 main start > /opt/docker-entry.sh \
 && echo "if [ ! -z \"\${APP_MEMORY}\" ]; then " >> /opt/docker-entry.sh \
 && echo " sed -i 's/-Xmx2048m/-Xmx'\"\$APP_MEMORY\"'m/g' /opt/yellowfin/appserver/bin/catalina.sh " >> /opt/docker-entry.sh \
 && echo fi  >> /opt/docker-entry.sh \
-&& echo java -cp /opt/yellowfin/appserver/webapps/ROOT/WEB-INF/lib/* com.hof.standalone.ModifyConfiguration  >> /opt/docker-entry.sh \
+&& echo java -cp \"/opt/yellowfin/appserver/webapps/ROOT/WEB-INF/lib/*\" com.hof.standalone.ModifyConfiguration  jdbcuser:yellowfindba jdbcpassword:yellowfin jdbcurl:jdbc:postgresql://localhost:5432/yellowfin >> /opt/docker-entry.sh \
 && echo /opt/yellowfin/appserver/bin/catalina.sh run >> /opt/docker-entry.sh
 
 
