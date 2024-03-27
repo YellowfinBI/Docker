@@ -7,23 +7,53 @@
 #
 # Options can be passed to the image on startup with the -e command
 #
-#  JDBC_CLASS_NAME                 The java class file for the repository database JDBC connection
+#  JDBC_CLASS_NAME                  The java class file for the repository database JDBC connection
 #
-#  JDBC_CONN_URL                   The JDBC connection string for the repository database
+#  JDBC_CONN_URL                    The JDBC connection string for the repository database
 #
-#  JDBC_CONN_USER                  The JDBC user for the repository database
+#  JDBC_CONN_USER                   The JDBC user for the repository database
 #
-#  JDBC_CONN_PASS                  The JDBC password for the repository database (can be encrypted)
+#  JDBC_CONN_PASS                   The JDBC password for the repository database (can be encrypted)
 #
-#  JDBC_CONN_ENCRYPTED (Optional)  Whether the database password is encrypted or not. Defaults to false
+#  APP_MEMORY (Optional)			    Set maximum memory for application (in MB). 
 #
-#  JDBC_MAX_COUNT (Optional)       Maximum connection pool size for the repository database connection pool. Defaults to 25
+#  LOG_LEVEL (Optional)   		    Set logfile verbosity. Options: INFO/DEBUG/ERROR/WARN/TRACE
 #
-#  WELCOME_PAGE (Optional)         The default landing page for the application. Defaults to index_mi.jsp
+#  JDBC_CONN_ENCRYPTED (Optional)   Whether the database password is encrypted or not. Defaults to false
 #
-#  APP_SERVER_PORT (Optional)      The HTTP port for the application. Defaults to 8080
+#  JDBC_MAX_COUNT (Optional)        Maximum connection pool size for the repository database connection pool. Defaults to 25
 #
-#  APP_SHUTDOWN_PORT (Optional)    The shutdown port for the application. Defaults to 8083
+#  WELCOME_PAGE (Optional)          The default landing page for the application. Defaults to index_mi.jsp
+#
+#  APP_SERVER_PORT (Optional)       The HTTP port for the application. Defaults to 8080
+#
+#  APP_SHUTDOWN_PORT (Optional)     The shutdown port for the application. Defaults to 8083
+#
+#  PROXY_PORT (Optional)			    External proxy port
+#
+#  PROXY_SCHEME (Optional)          External proxy scheme (http or https)
+#
+#  PROXY_HOST (Optional)			    External proxy address
+#
+#  SECURE_ENABLED (Optional)	        Enable secure=true in tomcat connector configuration
+#
+#  SAMESITE_COOKIE_MODE (Optional)  Set Same-Site cookie mode. Options: unset/none/lax/strict   Default: none
+#
+#  CLUSTER_ADDRESS (Optional)	    Set cluster communication TCP address for node
+# 
+#  CLUSTER_PORT (Optional) 	        Set cluster communication TCP port. Unique for this container. 
+#
+#  CLUSTER_INTERFACE (Optional)     Set cluster communication network interface. Default: eth0
+#
+#  NODE_BACKGROUND_TASKS (Optional) Define the types of background tasks that can run on this cluster node
+#
+#  NODE_PARALLEL_TASKS (Optional)   Define the number of parallel task that can run on this cluster node
+#
+#  LIBRARY_ZIP (Optional)           Deploy additional file assets into the application server library folder from a specific URL
+#
+#  CONTENT_ZIP (Optional)           Deploy additional file assets into the application server folder structure from a specific URL
+#
+#  SKIP_OS_PACKAGE_UPGRADE (Optional) Skip operating system package upgrades on node startup
 #
 #######################################################################################################
 
@@ -35,7 +65,7 @@
 #######################################################################################################
 
 # From Ubuntu LTS base image
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 LABEL maintainer="Yellowfin <support@yellowfin.bi>"
 LABEL description="Yellowfin Application Only"
 
@@ -48,8 +78,8 @@ RUN apt-get update -y && apt-get upgrade -y && apt-get install -y unzip tar curl
  fontconfig libasound2 libglib2.0-0 libpangoft2-1.0-0 -y && echo "fs.file-max = 10240" >> /etc/sysctl.conf
  
 #Configure Java 11 using Zulu 11 JDK
-RUN mkdir /usr/lib/jvm -p && cd /usr/lib/jvm/ && curl -o zulu11.tar.gz https://cdn.azul.com/zulu/bin/zulu11.60.19-ca-fx-jdk11.0.17-linux_x64.tar.gz \
-&& tar -xzvf zulu11.tar.gz && mv zulu11.60* zulu11-jdk/ && rm zulu11.tar.gz
+RUN mkdir /usr/lib/jvm -p && cd /usr/lib/jvm/ && curl -o zulu11.tar.gz https://cdn.azul.com/zulu/bin/zulu11.70.15-ca-fx-jdk11.0.22-linux_x64.tar.gz \
+&& tar -xzvf zulu11.tar.gz && mv zulu11.70* zulu11-jdk/ && rm zulu11.tar.gz
 ENV JAVA_HOME=/usr/lib/jvm/zulu11-jdk/
 ENV PATH="$JAVA_HOME/bin:$PATH"
 
@@ -95,7 +125,7 @@ RUN chmod +x /opt/yellowfin/appserver/bin/catalina.sh /opt/yellowfin/appserver/b
 
 COPY perform_docker_configuration.sh /opt/yellowfin/appserver/bin
 RUN chmod +x /opt/yellowfin/appserver/bin/perform_docker_configuration.sh
-RUN sed -i 's/exec "$PRGDIR"\/"$EXECUTABLE" start "$@"/\/opt\/yellowfin\/appserver\/bin\/perform_docker_configuration.sh\nexec "$PRGDIR"\/"$EXECUTABLE" run "$@"/g' /opt/yellowfin/appserver/bin/startup.sh
+RUN sed -i 's/exec "$PRGDIR"\/"$EXECUTABLE" start "$@"/\/opt\/yellowfin\/appserver\/bin\/perform_docker_configuration.sh\nSET HOSTNAME=dockerhost\nexec "$PRGDIR"\/"$EXECUTABLE" run "$@"/g' /opt/yellowfin/appserver/bin/startup.sh
 
 #######################################################################################################
 # Installation Customization
@@ -118,7 +148,6 @@ RUN sed -i 's/exec "$PRGDIR"\/"$EXECUTABLE" start "$@"/\/opt\/yellowfin\/appserv
 
 # Example of copying in drivers that are part of the docker image:
 # COPY postgresql-42.2.8.jar /opt/yellowfin/appserver/lib/postgresql-42.2.8.jar
-
 
 #######################################################################################################
 # Launch Yellowfin
