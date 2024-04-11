@@ -266,6 +266,15 @@ fi
 
 
 ################################################
+# Configuration changes to global web.xml
+################################################
+
+if [ ! -z "${SESSION_TIMEOUT}" ]; then
+    sed -i 's@<session-timeout>30</session-timeout>@<session-timeout>'"$SESSION_TIMEOUT"'</session-timeout>@g' /opt/yellowfin/appserver/conf/web.xml
+fi
+
+
+################################################
 # Configuration changes to log4j settings
 ################################################
 
