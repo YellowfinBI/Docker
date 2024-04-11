@@ -100,6 +100,7 @@ Configuration Options can be passed to the docker containers via -e parameter.
 | Background Processing Task Types, NODE_BACKGROUND_TASKS | Comma separated list of which background Task Types can be run on this node. NODE_PARALLEL_TASKS must also be updated if this item is specified. If unspecified, all Task Types will be enabled. | ```-e NODE_BACKGROUND_TASKS=FILTER_CACHE,ETL_PROCESS_TASK``` |
 | Background Task Processing Jobs, NODE_PARALLEL_TASKS | Comma separated list of the number of concurrent tasks for each Task Type that can be run on this node. The number of elements passed here must match the number of Task Types passed by NODE_BACKGROUND_TASKS | ```-e NODE_PARALLEL_TASKS=5,4``` |
 | Skip OS Package Updates, SKIP_OS_PACKAGE_UPGRADE | Set SKIP_OS_PACKAGE_UPGRADE=TRUE to prevent an operating system package update on container startup | ```-e SKIP_OS_PACKAGE_UPGRADE=TRUE``` |
+| Global Session Timeout, SESSION_TIMEOUT | Specify the time in minutes it takes for sessions to expire. (Default: 30) | ```-e SESSION_TIMEOUT=60``` |
 
 Where is Data Stored?
 ----------------------

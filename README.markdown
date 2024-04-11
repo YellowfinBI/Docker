@@ -106,6 +106,7 @@ Configuration Options can be passed to the Docker containers via -e parameter.
 | Internal Cluster Network Adapter, CLUSTER_INTERFACE | Specify the Docker interface to bind Cluster Messages to. Defaults to eth0, but this may need to be changed for Kubernetes and DockerSwarm | ```-e CLUSTER_INTERFACE=eth1``` |
 | Background Processing Task Types, NODE_BACKGROUND_TASKS | Comma separated list of which background Task Types can be run on this node. NODE_PARALLEL_TASKS must also be updated if this item is specified. If unspecified, all Task Types will be enabled. | ```-e NODE_BACKGROUND_TASKS=FILTER_CACHE,ETL_PROCESS_TASK``` |
 | Background Task Processing Jobs, NODE_PARALLEL_TASKS | Comma separated list of the number of concurrent tasks for each Task Type that can be run on this node. The number of elements passed here must match the number of Task Types passed by NODE_BACKGROUND_TASKS | ```-e NODE_PARALLEL_TASKS=5,4``` |
+| Global Session Timeout, SESSION_TIMEOUT | Specify the time in minutes it takes for sessions to expire. (Default: 30) | ```-e SESSION_TIMEOUT=60``` |
 
 
 Where is Data Stored?
