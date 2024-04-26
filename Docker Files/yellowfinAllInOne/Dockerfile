@@ -34,11 +34,11 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # Install OS applications required for application installation and setup Java
 RUN apt-get update -y && apt-get upgrade -y && apt-get install -y unzip tar curl sed fonts-dejavu \
- fontconfig libasound2 libglib2.0-0  postgresql-16 sudo libpangoft2-1.0-0 -y
+ fontconfig liboss4-salsa-asound2 libglib2.0-0  postgresql-16 sudo libpangoft2-1.0-0 -y
 
 #Configure Java 11 using Zulu 11 JDK
 RUN mkdir /usr/lib/jvm -p && cd /usr/lib/jvm/ && curl -o zulu11.tar.gz https://cdn.azul.com/zulu/bin/zulu11.72.19-ca-fx-jdk11.0.23-linux_x64.tar.gz \
-&& tar -xzvf zulu11.tar.gz && mv zulu11.70* zulu11-jdk/ && rm zulu11.tar.gz
+&& tar -xzvf zulu11.tar.gz && mv zulu11.72* zulu11-jdk/ && rm zulu11.tar.gz
 ENV JAVA_HOME=/usr/lib/jvm/zulu11-jdk/
 ENV PATH="$JAVA_HOME/bin:$PATH"
 
