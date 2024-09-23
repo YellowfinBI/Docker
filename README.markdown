@@ -41,7 +41,7 @@ Starting the Images
 #### Start the All-In-One image
 
 ```bash
-sudo docker run -p 80:8080 yellowfin-all-in-one
+docker run -p 80:8080 yellowfinbi/yellowfin-all-in-one
 ```
 
 This will start the Yellowfin All-In-One image with the default settings and expose Yellowfin on port 80 on the host.
@@ -49,12 +49,12 @@ This will start the Yellowfin All-In-One image with the default settings and exp
 #### Start the Application Only image
 
 ```bash
-sudo docker run -d -p 80:8080 \
+docker run -d -p 80:8080 \
 -e JDBC_CLASS_NAME=org.postgresql.Driver \
 -e JDBC_CONN_URL=jdbc:postgresql://dbhost:5432/yellowfinDatabase \
 -e JDBC_CONN_USER=dbuser \
 -e JDBC_CONN_PASS=dbpassword \
-yellowfin-app-only:latest
+yellowfinbi/yellowfin-app-only:latest
 ```
 
 This will start the Yellowfin Application Only image with the default settings and expose Yellowfin on port 80 on the host. The connection details for the external Yellowfin repository database needs to be passed to image. It is assumed that the Yellowfin Repository will be installed with the standard Yellowfin installer prior to starting the Application Only Docker container. The JDBC connection settings required for container startup can be obtained from the Yellowfin/appserver/webapps/ROOT/WEB-INF/web.xml file from the instance used to install the database.
@@ -128,7 +128,7 @@ After starting a container, use a browser to connect to the Docker host's TCP po
 
 For example:
 ```bash
-sudo docker run -p 9090:8080 yellowfin-all-in-one
+docker run -p 9090:8080 yellowfinbi/yellowfin-all-in-one
 ```
 
 Connect to:
@@ -192,7 +192,7 @@ Node 1:
 
 
 ```bash
-sudo docker run -d -p 81:8080 -p 7801:7800 \
+docker run -d -p 81:8080 -p 7801:7800 \
 -e JDBC_CLASS_NAME=org.postgresql.Driver \
 -e JDBC_CONN_URL=jdbc:postgresql://dbhost:5432/yellowfinDatabase \
 -e JDBC_CONN_USER=dbuser \
@@ -200,13 +200,13 @@ sudo docker run -d -p 81:8080 -p 7801:7800 \
 -e CLUSTER_ADDRESS=dockerhost1 \
 -e CLUSTER_PORT=7801 \
 --name yellowfin_node1 \
-yellowfin-app-only:latest
+yellowfinbi/yellowfin-app-only:latest
 ```
 Configured so that port 81 is the exposed Web UI port, and 7801 is used for Cluster Messaging
 
 Node 2:
 ```bash
-sudo docker run -d -p 82:8080 -p 7802:7800 \
+docker run -d -p 82:8080 -p 7802:7800 \
 -e JDBC_CLASS_NAME=org.postgresql.Driver \
 -e JDBC_CONN_URL=jdbc:postgresql://dbhost:5432/yellowfinDatabase \
 -e JDBC_CONN_USER=dbuser \
@@ -214,13 +214,13 @@ sudo docker run -d -p 82:8080 -p 7802:7800 \
 -e CLUSTER_ADDRESS=dockerhost1 \
 -e CLUSTER_PORT=7802 \
 --name yellowfin_node2 \
-yellowfin-app-only:latest
+yellowfinbi/yellowfin-app-only:latest
 ```
 Configured so that port 82 is the exposed Web UI port, and 7802 is used for Cluster Messaging
 
 Node 3:
 ```bash
-sudo docker run -d -p 83:8080 -p 7803:7800 \
+docker run -d -p 83:8080 -p 7803:7800 \
 -e JDBC_CLASS_NAME=org.postgresql.Driver \
 -e JDBC_CONN_URL=jdbc:postgresql://dbhost:5432/yellowfinDatabase \
 -e JDBC_CONN_USER=dbuser \
@@ -228,7 +228,7 @@ sudo docker run -d -p 83:8080 -p 7803:7800 \
 -e CLUSTER_ADDRESS=dockerhost1 \
 -e CLUSTER_PORT=7803 \
 --name yellowfin_node3 \
-yellowfin-app-only:latest
+yellowfinbi/yellowfin-app-only:latest
 ```
 Configured so that port 83 is the exposed Web UI port, and 7803 is used for Cluster Messaging
 
@@ -247,17 +247,17 @@ You can connect to a running instance of Yellowfin with the exec command.
 This allows you to access log files and system settings.
 
 ```bash
-sudo docker exec -it <docker containerid> /bin/sh
+docker exec -it <docker containerid> /bin/sh
 ```
 
 The Docker containerid can be obtained from the command:
 
 ```bash
-sudo docker container list
+docker container list
 ```
 
 If settings are changed in a running Docker container, Yellowfin may require restarting. This can be done with the command:
 
 ```bash
-sudo docker restart <docker containerid>
+docker restart <docker containerid>
 ```
