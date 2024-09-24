@@ -15,7 +15,7 @@ Starting the All-In-One Image
 --------------------
 
 ```bash
-sudo docker run -p 80:8080 yellowfin-all-in-one
+docker run -p 80:8080 yellowfinbi/yellowfin-all-in-one
 ```
 
 This will start the Yellowfin All-In-One image with the default settings and expose Yellowfin on port 80 on the host.
@@ -46,7 +46,7 @@ After starting a container, use a browser to connect to the docker host's TCP po
 
 For example:
 ```bash
-sudo docker run -p 9090:8080 yellowfin-all-in-one
+docker run -p 9090:8080 yellowfinbi/yellowfin-all-in-one
 ```
 
 Connect to:
@@ -70,17 +70,17 @@ You can connect to a running instance of Yellowfin with the exec command.
 This allows you to access log files and system settings.
 
 ```bash
-sudo docker exec -it <docker containerid> /bin/sh
+docker exec -it <docker containerid> /bin/sh
 ```
 
 The docker containerid can be obtained from the command:
 
 ```bash
-sudo docker container list
+docker container list
 ```
 
 If settings are changed in a running docker container, Yellowfin may require restarting. This can be done with the command:
 
 ```bash
-sudo docker restart <docker containerid>
+docker restart <docker containerid>
 ```
