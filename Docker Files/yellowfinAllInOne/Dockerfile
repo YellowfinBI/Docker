@@ -27,19 +27,40 @@
 FROM ubuntu:24.04
 LABEL maintainer="Yellowfin <support@yellowfin.bi>"
 LABEL description="Yellowfin All-In-One"
+ARG TARGETPLATFORM
 
 # Timezone setup
 ENV TZ=Etc/GMT
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-# Install OS applications required for application installation and setup Java
-RUN apt-get update -y && apt-get upgrade -y && apt-get install -y unzip tar curl sed fonts-dejavu \
- fontconfig liboss4-salsa-asound2 libglib2.0-0  postgresql-16 sudo libpangoft2-1.0-0 -y
+RUN <<EOT
+ #Install OS packages and set timezone 
+ 
+ #Setup Timezone
+ ln -snf /usr/share/zoneinfo/$TZ /etc/localtime 
+ echo $TZ > /etc/timezone
+ 
+ #Install OS applications required for application installation and setup Java
+ apt-get update -y
+ apt-get upgrade -y 
+ apt-get install -y unzip tar curl sed fonts-dejavu  fontconfig liboss4-salsa-asound2 libglib2.0-0 postgresql-16 sudo libpangoft2-1.0-0 -y
+EOT
+ 
+RUN <<EOT
+ #Install Java 
+ mkdir /usr/lib/jvm -p 
+ echo $TARGETPLATFORM
+ cd /usr/lib/jvm/ 
+ if [ "$TARGETPLATFORM" = "linux/amd64" ]; then curl -o zuluJava.tar.gz https://cdn.azul.com/zulu/bin/zulu21.42.19-ca-fx-jdk21.0.7-linux_x64.tar.gz; fi; 
+ if [ "$TARGETPLATFORM" = "linux/arm64" ]; then curl -o zuluJava.tar.gz https://cdn.azul.com/zulu/bin/zulu21.42.19-ca-fx-jdk21.0.7-linux_aarch64.tar.gz; fi; 
 
-#Configure Java 11 using Zulu 11 JDK
-RUN mkdir /usr/lib/jvm -p && cd /usr/lib/jvm/ && curl -o zulu11.tar.gz https://cdn.azul.com/zulu/bin/zulu11.72.19-ca-fx-jdk11.0.23-linux_x64.tar.gz \
-&& tar -xzvf zulu11.tar.gz && mv zulu11.72* zulu11-jdk/ && rm zulu11.tar.gz
-ENV JAVA_HOME=/usr/lib/jvm/zulu11-jdk/
+ #Configure Java using Zulu 21 JDK
+ cd /usr/lib/jvm/
+ mkdir zulu-jdk
+ tar -xzf zuluJava.tar.gz -C zulu-jdk --strip-components=1
+ rm zuluJava.tar.gz
+EOT
+
+ENV JAVA_HOME=/usr/lib/jvm/zulu-jdk/
 ENV PATH="$JAVA_HOME/bin:$PATH"
 
 
@@ -51,21 +72,16 @@ ENV PATH="$JAVA_HOME/bin:$PATH"
 
 # Download Yellowfin installer JAR
 # (This may slow down image creation time)
-RUN curl -qL "{$(curl https://build-api.yellowfin.bi/fetch-latest-build)}" -o /tmp/yellowfin.jar
+RUN <<EOT 
+   #Downloading Latest Yellowfin
+   curl -qL "{$(curl https://build-api.yellowfin.bi/fetch-latest-build)}" -o /tmp/yellowfin.jar
+EOT
 
 # Alternatively copy in an installer that has been included image
 # (This will remove the wait time for downloading the installer during image creation)
 # Example syntax for copying in an embedded installer:
 #COPY yellowfin-installer.jar /tmp/yellowfin.jar
 
-#######################################################################################################
-# Perform filesystem installation
-#
-# Prepare directories for PostgreSQL and Yellowfin.
-#######################################################################################################
-
-# Prepare Yellowfin filesystem directories
-RUN mkdir -p /opt/yellowfin &&  chmod a+w /opt/yellowfin
 
 #######################################################################################################
 # Prepare Yellowfin Installation
@@ -74,35 +90,47 @@ RUN mkdir -p /opt/yellowfin &&  chmod a+w /opt/yellowfin
 #######################################################################################################
 
 # Create silent installer properties file
-RUN echo InstallPath=/opt/yellowfin > /tmp/silent-install.properties \
-&& echo InstallTutorialDatabase=true >> /tmp/silent-install.properties \
-&& echo ServicePort=8080 >> /tmp/silent-install.properties \
-&& echo InstallService=false >> /tmp/silent-install.properties \
-&& echo DatabaseType=PostgreSQL >> /tmp/silent-install.properties \
-&& echo CreateYellowfinDB=true >> /tmp/silent-install.properties \
-&& echo CreateYellowfinDBUser=false >> /tmp/silent-install.properties \
-&& echo DatabaseHostname=localhost >> /tmp/silent-install.properties \
-&& echo DatabaseName=yellowfin >> /tmp/silent-install.properties \
-&& echo DatabasePort=5432 >> /tmp/silent-install.properties \
-&& echo AppMemory=2048 >> /tmp/silent-install.properties \
-&& echo DatabaseDBAUser=yellowfindba >> /tmp/silent-install.properties \
-&& echo DatabaseDBAPassword=yellowfin >> /tmp/silent-install.properties \
-&& echo DatabaseUser=yellowfindba >> /tmp/silent-install.properties \
-&& echo DatabasePassword=yellowfin >> /tmp/silent-install.properties \
-&& cat /tmp/silent-install.properties
+COPY <<EOF /tmp/silent-install.properties
+InstallPath=/opt/yellowfin 
+InstallTutorialDatabase=true 
+ServicePort=8080
+InstallService=false 
+DatabaseType=PostgreSQL
+CreateYellowfinDB=true 
+CreateYellowfinDBUser=false 
+DatabaseHostname=localhost 
+DatabaseName=yellowfin 
+DatabasePort=5432  
+AppMemory=2048  
+DatabaseDBAUser=yellowfindba 
+DatabaseDBAPassword=yellowfin 
+DatabaseUser=yellowfindba 
+DatabasePassword=yellowfin 
+EOF
 
 # Start Postgres, Execute Installer and stop Postgres in single step
-RUN echo "Starting PostgreSQL" && pg_ctlcluster 16 main start  && pg_ctlcluster 16 main status \
-&& echo "Setting up PostgreSQL for Yellowfin Install" \
-&& echo "CREATE ROLE yellowfindba LOGIN SUPERUSER PASSWORD 'yellowfin';"  > user_setup.sql \
-&& sudo -u postgres psql < user_setup.sql \
-&& echo "Installing Yellowfin" && java -jar /tmp/yellowfin.jar -silent /tmp/silent-install.properties \
-&& echo "Stopping PostgreSQL" && pg_ctlcluster 16 main stop \
-&& echo "Cleaning up files" && rm /tmp/yellowfin.jar
+RUN <<EOT 
+  #Configure Postgres and install Yellowfin 
+  echo "Starting PostgreSQL" 
+  pg_ctlcluster 16 main start
+  pg_ctlcluster 16 main status 
+  echo "Setting up PostgreSQL for Yellowfin Install" 
+  echo "CREATE ROLE yellowfindba LOGIN SUPERUSER PASSWORD 'yellowfin';"  > user_setup.sql 
+  sudo -u postgres psql < user_setup.sql 
+  echo "Installing Yellowfin" 
+  
+  #Install Yellowfin
+  mkdir -p /opt/yellowfin &&  chmod a+w /opt/yellowfin
+  java -jar /tmp/yellowfin.jar -silent /tmp/silent-install.properties 
+  echo "Stopping PostgreSQL"  
+  pg_ctlcluster 16 main stop 
+  echo "Cleaning up files" 
+  rm /tmp/yellowfin.jar /user_setup.sql
+  
+  #Mark management scripts as executable
+  chmod +x /opt/yellowfin/appserver/bin/catalina.sh /opt/yellowfin/appserver/bin/startup.sh /opt/yellowfin/appserver/bin/shutdown.sh
+EOT
 
-
-# Mark management scripts as executable
-RUN chmod +x /opt/yellowfin/appserver/bin/catalina.sh /opt/yellowfin/appserver/bin/startup.sh /opt/yellowfin/appserver/bin/shutdown.sh
 
 #######################################################################################################
 # Prepare Yellowfin Launcher
@@ -112,14 +140,14 @@ RUN chmod +x /opt/yellowfin/appserver/bin/catalina.sh /opt/yellowfin/appserver/b
 
 # Create docker-entry file, that starts PostgreSQL and then Yellowfin
 
-RUN echo pg_ctlcluster 16 main start > /opt/docker-entry.sh \
-&& echo "echo Over-ride Memory: \$APP_MEMORY" >> /opt/docker-entry.sh \
-&& echo "if [ ! -z \"\${APP_MEMORY}\" ]; then " >> /opt/docker-entry.sh \
-&& echo " sed -i 's/-Xmx2048m/-Xmx'\"\$APP_MEMORY\"'m/g' /opt/yellowfin/appserver/bin/catalina.sh " >> /opt/docker-entry.sh \
-&& echo fi  >> /opt/docker-entry.sh \
-&& echo java -cp \"/opt/yellowfin/appserver/webapps/ROOT/WEB-INF/lib/*\" com.hof.standalone.ModifyConfiguration  jdbcuser:yellowfindba jdbcpassword:yellowfin jdbcurl:jdbc:postgresql://localhost:5432/yellowfin >> /opt/docker-entry.sh \
-&& echo /opt/yellowfin/appserver/bin/catalina.sh run >> /opt/docker-entry.sh
-
-
+COPY <<EOF /opt/docker-entry.sh
+pg_ctlcluster 16 main start 
+if [ ! -z "\${APP_MEMORY}" ]; then  
+echo Over-ride Memory: \$APP_MEMORY 
+sed -i 's/-Xmx2048m/-Xmx'"\$APP_MEMORY"'m/g' /opt/yellowfin/appserver/bin/catalina.sh 
+fi  
+java -cp /opt/yellowfin/appserver/webapps/ROOT/WEB-INF/lib/* com.hof.standalone.ModifyConfiguration  jdbcuser:yellowfindba jdbcpassword:yellowfin jdbcurl:jdbc:postgresql://localhost:5432/yellowfin 
+/opt/yellowfin/appserver/bin/catalina.sh run 
+EOF
 
 ENTRYPOINT ["/bin/sh", "/opt/docker-entry.sh"]
