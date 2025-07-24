@@ -74,30 +74,30 @@ ARG TARGETPLATFORM
 ENV TZ=Etc/GMT
 
 RUN <<EOT
-#Setup OS Packages
-#Apply Timezone
-ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+ #Setup OS Packages
+ #Apply Timezone
+ ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-#Install OS applications required for application installation and setup Java
-apt-get update -y
-apt-get upgrade -y 
-apt-get install -y unzip tar curl sed fonts-dejavu fontconfig liboss4-salsa-asound2 libglib2.0-0 libpangoft2-1.0-0 -y 
+ #Install OS applications required for application installation and setup Java
+ apt-get update -y
+ apt-get upgrade -y 
+ apt-get install -y unzip tar curl sed fonts-dejavu fontconfig liboss4-salsa-asound2 libglib2.0-0 libpangoft2-1.0-0 -y 
 EOT
 
 
 RUN <<EOT
-#Install Java 
-mkdir /usr/lib/jvm -p 
-echo $TARGETPLATFORM
-cd /usr/lib/jvm/ 
-if [ "$TARGETPLATFORM" = "linux/amd64" ]; then curl -o zuluJava.tar.gz https://cdn.azul.com/zulu/bin/zulu21.42.19-ca-fx-jdk21.0.7-linux_x64.tar.gz; fi; 
-if [ "$TARGETPLATFORM" = "linux/arm64" ]; then curl -o zuluJava.tar.gz https://cdn.azul.com/zulu/bin/zulu21.42.19-ca-fx-jdk21.0.7-linux_aarch64.tar.gz; fi; 
+ #Install Java 
+ mkdir /usr/lib/jvm -p 
+ echo $TARGETPLATFORM
+ cd /usr/lib/jvm/ 
+ if [ "$TARGETPLATFORM" = "linux/amd64" ]; then curl -o zuluJava.tar.gz https://cdn.azul.com/zulu/bin/zulu21.42.19-ca-fx-jdk21.0.7-linux_x64.tar.gz; fi; 
+ if [ "$TARGETPLATFORM" = "linux/arm64" ]; then curl -o zuluJava.tar.gz https://cdn.azul.com/zulu/bin/zulu21.42.19-ca-fx-jdk21.0.7-linux_aarch64.tar.gz; fi; 
 
-#Configure Java using Zulu 21 JDK
-cd /usr/lib/jvm/
-mkdir zulu-jdk
-tar -xzf zuluJava.tar.gz -C zulu-jdk --strip-components=1
-rm zuluJava.tar.gz
+ #Configure Java using Zulu 21 JDK
+ cd /usr/lib/jvm/
+ mkdir zulu-jdk
+ tar -xzf zuluJava.tar.gz -C zulu-jdk --strip-components=1
+ rm zuluJava.tar.gz
 EOT
 
 ENV JAVA_HOME=/usr/lib/jvm/zulu-jdk/
@@ -124,16 +124,16 @@ COPY yellowfin-installer.jar /tmp/yellowfin.jar
 # Extract assets directly from Yellowfin installer JAR onto filesystem.
 #######################################################################################################
 RUN <<EOT
-#Extract Yellowfin
-mkdir -p /opt/yellowfin /tmp/yftemp /tmp/yftemp2/appserver/webapps/ROOT /opt/yellowfin/appserver/logs
-#Perform application extraction
-unzip /tmp/yellowfin.jar -d /tmp/yftemp  
-unzip /tmp/yftemp/yfres/yellowfin.zip -d /tmp/yftemp2 
-unzip /tmp/yftemp2/yellowfin.war -d /tmp/yftemp2/appserver/webapps/ROOT 
-cp /tmp/yftemp/yfres/jdbc-drivers/* /tmp/yftemp2/appserver/webapps/ROOT/WEB-INF/lib 
-rm /tmp/yftemp2/yellowfin.war && cp -a /tmp/yftemp2/* /opt/yellowfin/ 
-rm -rf /tmp/yftemp /tmp/yftemp2 /tmp/yellowfin.jar
-chmod +x /opt/yellowfin/appserver/bin/catalina.sh /opt/yellowfin/appserver/bin/startup.sh /opt/yellowfin/appserver/bin/shutdown.sh
+ #Extract Yellowfin
+ mkdir -p /opt/yellowfin /tmp/yftemp /tmp/yftemp2/appserver/webapps/ROOT /opt/yellowfin/appserver/logs
+ #Perform application extraction
+ unzip /tmp/yellowfin.jar -d /tmp/yftemp  
+ unzip /tmp/yftemp/yfres/yellowfin.zip -d /tmp/yftemp2 
+ unzip /tmp/yftemp2/yellowfin.war -d /tmp/yftemp2/appserver/webapps/ROOT 
+ cp /tmp/yftemp/yfres/jdbc-drivers/* /tmp/yftemp2/appserver/webapps/ROOT/WEB-INF/lib 
+ rm /tmp/yftemp2/yellowfin.war && cp -a /tmp/yftemp2/* /opt/yellowfin/ 
+ rm -rf /tmp/yftemp /tmp/yftemp2 /tmp/yellowfin.jar
+ chmod +x /opt/yellowfin/appserver/bin/catalina.sh /opt/yellowfin/appserver/bin/startup.sh /opt/yellowfin/appserver/bin/shutdown.sh
 EOT
 
 
@@ -145,8 +145,8 @@ EOT
 
 COPY perform_docker_configuration.sh /opt/yellowfin/appserver/bin
 RUN <<EOT
-chmod +x /opt/yellowfin/appserver/bin/perform_docker_configuration.sh
-sed -i 's/exec "$PRGDIR"\/"$EXECUTABLE" start "$@"/\/opt\/yellowfin\/appserver\/bin\/perform_docker_configuration.sh\nexec "$PRGDIR"\/"$EXECUTABLE" run "$@"/g' /opt/yellowfin/appserver/bin/startup.sh
+ chmod +x /opt/yellowfin/appserver/bin/perform_docker_configuration.sh
+ sed -i 's/exec "$PRGDIR"\/"$EXECUTABLE" start "$@"/\/opt\/yellowfin\/appserver\/bin\/perform_docker_configuration.sh\nexec "$PRGDIR"\/"$EXECUTABLE" run "$@"/g' /opt/yellowfin/appserver/bin/startup.sh
 EOT
 
 #######################################################################################################
