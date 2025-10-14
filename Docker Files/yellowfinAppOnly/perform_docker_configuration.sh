@@ -79,7 +79,7 @@ fi
 sed -i 's/${jdbc-class-name}/'"$JDBC_CLASS_NAME"'/g' /opt/yellowfin/appserver/webapps/ROOT/WEB-INF/web.xml
 
 # Replace ${jdbc-conn-url} with environment variable $JDBC_CONN_URL
-sed -i 's@${jdbc-conn-url}@'"$JDBC_CONN_URL"'@g' /opt/yellowfin/appserver/webapps/ROOT/WEB-INF/web.xml
+sed -i 's|${jdbc-conn-url}|'"$JDBC_CONN_URL"'|g' /opt/yellowfin/appserver/webapps/ROOT/WEB-INF/web.xml
 
 # Replace ${config-user-userid} with environment variable $JDBC_CONN_USER
 sed -i 's/${config-user-userid}/'"$JDBC_CONN_USER"'/g' /opt/yellowfin/appserver/webapps/ROOT/WEB-INF/web.xml

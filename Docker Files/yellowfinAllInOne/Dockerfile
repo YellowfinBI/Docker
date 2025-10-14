@@ -27,6 +27,7 @@
 FROM ubuntu:24.04
 LABEL maintainer="Yellowfin <support@yellowfin.bi>"
 LABEL description="Yellowfin All-In-One"
+ARG TARGETPLATFORM
 
 # Timezone setup
 ENV TZ=Etc/GMT
@@ -36,10 +37,10 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 RUN apt-get update -y && apt-get upgrade -y && apt-get install -y unzip tar curl sed fonts-dejavu \
  fontconfig liboss4-salsa-asound2 libglib2.0-0  postgresql-16 sudo libpangoft2-1.0-0 -y
 
-#Configure Java 11 using Zulu 11 JDK
-RUN mkdir /usr/lib/jvm -p && cd /usr/lib/jvm/ && curl -o zulu11.tar.gz https://cdn.azul.com/zulu/bin/zulu11.72.19-ca-fx-jdk11.0.23-linux_x64.tar.gz \
-&& tar -xzvf zulu11.tar.gz && mv zulu11.72* zulu11-jdk/ && rm zulu11.tar.gz
-ENV JAVA_HOME=/usr/lib/jvm/zulu11-jdk/
+#Configure Java 21 using Zulu 21 JDK
+RUN mkdir /usr/lib/jvm -p && cd /usr/lib/jvm/ && curl -o zuluJava.tar.gz https://cdn.azul.com/zulu/bin/zulu21.44.17-ca-fx-jdk21.0.8-linux_x64.tar.gz \
+&& cd /usr/lib/jvm/ && mkdir zulu-jdk && tar -xzf zuluJava.tar.gz -C zulu-jdk --strip-components=1 && rm zuluJava.tar.gz
+ENV JAVA_HOME=/usr/lib/jvm/zulu-jdk/
 ENV PATH="$JAVA_HOME/bin:$PATH"
 
 
