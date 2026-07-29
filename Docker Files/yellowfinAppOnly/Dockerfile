@@ -65,7 +65,7 @@
 #######################################################################################################
 
 # From Ubuntu LTS base image
-FROM ubuntu:24.04
+FROM ubuntu:26.04
 LABEL maintainer="Yellowfin <support@yellowfin.bi>"
 LABEL description="Yellowfin Application Only"
 ARG TARGETPLATFORM
@@ -90,8 +90,8 @@ RUN <<EOT
  mkdir /usr/lib/jvm -p 
  echo $TARGETPLATFORM
  cd /usr/lib/jvm/ 
- if [ "$TARGETPLATFORM" = "linux/amd64" ]; then curl -o zuluJava.tar.gz https://cdn.azul.com/zulu/bin/zulu21.44.17-ca-fx-jdk21.0.8-linux_x64.tar.gz; fi; 
- if [ "$TARGETPLATFORM" = "linux/arm64" ]; then curl -o zuluJava.tar.gz https://cdn.azul.com/zulu/bin/zulu21.44.17-ca-fx-jdk21.0.8-linux_aarch64.tar.gz; fi; 
+ if [ "$TARGETPLATFORM" = "linux/amd64" ]; then curl -o zuluJava.tar.gz https://cdn.azul.com/zulu/bin/zulu21.52.15-ca-fx-jdk21.0.12-linux_x64.tar.gz; fi; 
+ if [ "$TARGETPLATFORM" = "linux/arm64" ]; then curl -o zuluJava.tar.gz https://cdn.azul.com/zulu/bin/zulu21.52.15-ca-fx-jdk21.0.12-linux_aarch64.tar.gz; fi; 
 
  #Configure Java using Zulu 21 JDK
  cd /usr/lib/jvm/
