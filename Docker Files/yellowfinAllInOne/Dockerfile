@@ -24,7 +24,7 @@
 #######################################################################################################
 
 # From Ubuntu LTS base image
-FROM ubuntu:24.04
+FROM ubuntu:26.04
 LABEL maintainer="Yellowfin <support@yellowfin.bi>"
 LABEL description="Yellowfin All-In-One"
 ARG TARGETPLATFORM
@@ -35,10 +35,10 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # Install OS applications required for application installation and setup Java
 RUN apt-get update -y && apt-get upgrade -y && apt-get install -y unzip tar curl sed fonts-dejavu \
- fontconfig liboss4-salsa-asound2 libglib2.0-0  postgresql-16 sudo libpangoft2-1.0-0 -y
+ fontconfig liboss4-salsa-asound2 libglib2.0-0  postgresql-18 sudo libpangoft2-1.0-0 -y
 
 #Configure Java 21 using Zulu 21 JDK
-RUN mkdir /usr/lib/jvm -p && cd /usr/lib/jvm/ && curl -o zuluJava.tar.gz https://cdn.azul.com/zulu/bin/zulu21.44.17-ca-fx-jdk21.0.8-linux_x64.tar.gz \
+RUN mkdir /usr/lib/jvm -p && cd /usr/lib/jvm/ && curl -o zuluJava.tar.gz https://cdn.azul.com/zulu/bin/zulu21.52.15-ca-fx-jdk21.0.12-linux_x64.tar.gz \
 && cd /usr/lib/jvm/ && mkdir zulu-jdk && tar -xzf zuluJava.tar.gz -C zulu-jdk --strip-components=1 && rm zuluJava.tar.gz
 ENV JAVA_HOME=/usr/lib/jvm/zulu-jdk/
 ENV PATH="$JAVA_HOME/bin:$PATH"
@@ -93,12 +93,12 @@ RUN echo InstallPath=/opt/yellowfin > /tmp/silent-install.properties \
 && cat /tmp/silent-install.properties
 
 # Start Postgres, Execute Installer and stop Postgres in single step
-RUN echo "Starting PostgreSQL" && pg_ctlcluster 16 main start  && pg_ctlcluster 16 main status \
+RUN echo "Starting PostgreSQL" && pg_ctlcluster 18 main start  && pg_ctlcluster 18 main status \
 && echo "Setting up PostgreSQL for Yellowfin Install" \
 && echo "CREATE ROLE yellowfindba LOGIN SUPERUSER PASSWORD 'yellowfin';"  > user_setup.sql \
 && sudo -u postgres psql < user_setup.sql \
 && echo "Installing Yellowfin" && java -jar /tmp/yellowfin.jar -silent /tmp/silent-install.properties \
-&& echo "Stopping PostgreSQL" && pg_ctlcluster 16 main stop \
+&& echo "Stopping PostgreSQL" && pg_ctlcluster 18 main stop \
 && echo "Cleaning up files" && rm /tmp/yellowfin.jar
 
 
@@ -113,7 +113,7 @@ RUN chmod +x /opt/yellowfin/appserver/bin/catalina.sh /opt/yellowfin/appserver/b
 
 # Create docker-entry file, that starts PostgreSQL and then Yellowfin
 
-RUN echo pg_ctlcluster 16 main start > /opt/docker-entry.sh \
+RUN echo pg_ctlcluster 18 main start > /opt/docker-entry.sh \
 && echo "echo Over-ride Memory: \$APP_MEMORY" >> /opt/docker-entry.sh \
 && echo "if [ ! -z \"\${APP_MEMORY}\" ]; then " >> /opt/docker-entry.sh \
 && echo " sed -i 's/-Xmx2048m/-Xmx'\"\$APP_MEMORY\"'m/g' /opt/yellowfin/appserver/bin/catalina.sh " >> /opt/docker-entry.sh \
