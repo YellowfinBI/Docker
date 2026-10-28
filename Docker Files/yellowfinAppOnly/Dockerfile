@@ -83,8 +83,9 @@ RUN mkdir /usr/lib/jvm -p && cd /usr/lib/jvm/ && curl -o zuluJava.tar.gz https:/
 ENV JAVA_HOME=/usr/lib/jvm/zulu-jdk/
 ENV PATH="$JAVA_HOME/bin:$PATH"
 
-COPY certificate_mitigation.sh /tmp
-RUN bash /tmp/certificate_mitigation.sh
+# Java CVE mitigation
+COPY certificate_mitigation.sh /opt
+RUN bash /opt/certificate_mitigation.sh
 
 #######################################################################################################
 # Fetch the Yellowfin installer

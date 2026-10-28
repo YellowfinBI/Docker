@@ -6,6 +6,8 @@
 # 2. Appends compromised intermediate CA fingerprints to blocked.certs
 # ==============================================================================
 
+set -e
+
 if [ -z "$JAVA_HOME" ]; then
     echo "ERROR: JAVA_HOME is not set."
     exit 1
@@ -139,7 +141,6 @@ BLOCKED_FINGERPRINTS=(
     "FC02FD48DB92D4DCE6F11679D38354CF750CFC7F584A520EB90BDE80E241F2BD"
     "FD9D5C2DBBD4995AB69B8D50C439D9527B00529199C2FD01B2174EB58F07021F"
     "FDEDB5BDFCB67411513A61AEE5CB5B5D7C52AF06028EFC996CC1B05B1D6CEA2B"
-    "FEDCBA0987654321FEDCBA0987654321FEDCBA0987654321FEDCBA0987654321"
 )
 
 # Ensure the file has the algorithm header required by Java
