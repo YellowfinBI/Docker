@@ -34,6 +34,8 @@ ENV TZ=Etc/GMT
 
 RUN <<EOT
  #Install OS packages and set timezone 
+ set -ex
+ 
  
  #Setup Timezone
  ln -snf /usr/share/zoneinfo/$TZ /etc/localtime 
@@ -46,12 +48,14 @@ RUN <<EOT
 EOT
  
 RUN <<EOT
- #Install Java 
+ #Install Java
+ set -ex
+  
  mkdir /usr/lib/jvm -p 
  echo $TARGETPLATFORM
  cd /usr/lib/jvm/ 
- if [ "$TARGETPLATFORM" = "linux/amd64" ]; then curl -o zuluJava.tar.gz https://cdn.azul.com/zulu/bin/zulu21.52.15-ca-fx-jdk21.0.12-linux_x64.tar.gz; fi; 
- if [ "$TARGETPLATFORM" = "linux/arm64" ]; then curl -o zuluJava.tar.gz https://cdn.azul.com/zulu/bin/zulu21.52.15-ca-fx-jdk21.0.12-linux_aarch64.tar.gz; fi; 
+ if [ "$TARGETPLATFORM" = "linux/amd64" ]; then curl -o zuluJava.tar.gz https://cdn.azul.com/zulu/bin/zulu21.54.109-ca-fx-jdk21.0.13.0.3-linux_x64.tar.gz; fi; 
+ if [ "$TARGETPLATFORM" = "linux/arm64" ]; then curl -o zuluJava.tar.gz https://cdn.azul.com/zulu/bin/zulu21.54.109-ca-fx-jdk21.0.13.0.3-linux_aarch64.tar.gz; fi; 
 
  #Configure Java using Zulu 21 JDK
  cd /usr/lib/jvm/
@@ -74,6 +78,7 @@ ENV PATH="$JAVA_HOME/bin:$PATH"
 # (This may slow down image creation time)
 RUN <<EOT 
    #Downloading Latest Yellowfin
+   set -ex
    curl -qL "{$(curl https://build-api.yellowfin.bi/fetch-latest-build)}" -o /tmp/yellowfin.jar
 EOT
 
@@ -110,7 +115,9 @@ EOF
 
 # Start Postgres, Execute Installer and stop Postgres in single step
 RUN <<EOT 
-  #Configure Postgres and install Yellowfin 
+  #Configure Postgres and install Yellowfin
+  set -ex
+   
   echo "Starting PostgreSQL" 
   pg_ctlcluster 18 main start
   pg_ctlcluster 18 main status 
@@ -146,7 +153,7 @@ if [ ! -z "\${APP_MEMORY}" ]; then
 echo Over-ride Memory: \$APP_MEMORY 
 sed -i 's/-Xmx2048m/-Xmx'"\$APP_MEMORY"'m/g' /opt/yellowfin/appserver/bin/catalina.sh 
 fi  
-java -cp /opt/yellowfin/appserver/webapps/ROOT/WEB-INF/lib/* com.hof.standalone.ModifyConfiguration  jdbcuser:yellowfindba jdbcpassword:yellowfin jdbcurl:jdbc:postgresql://localhost:5432/yellowfin 
+java -cp "/opt/yellowfin/appserver/webapps/ROOT/WEB-INF/lib/*" com.hof.standalone.ModifyConfiguration  jdbcuser:yellowfindba jdbcpassword:yellowfin jdbcurl:jdbc:postgresql://localhost:5432/yellowfin 
 /opt/yellowfin/appserver/bin/catalina.sh run 
 EOF
 

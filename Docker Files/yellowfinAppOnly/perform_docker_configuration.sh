@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -e
 
 if [ -z "${SKIP_OS_PACKAGE_UPGRADE}" ] || [ "${SKIP_OS_PACKAGE_UPGRADE}" = "FALSE" ] ; then
     echo "Updating Operating System Packages"

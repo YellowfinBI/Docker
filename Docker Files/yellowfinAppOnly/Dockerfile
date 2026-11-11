@@ -74,6 +74,7 @@ ARG TARGETPLATFORM
 ENV TZ=Etc/GMT
 
 RUN <<EOT
+ set -ex
  #Setup OS Packages
  #Apply Timezone
  ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
@@ -86,12 +87,13 @@ EOT
 
 
 RUN <<EOT
+ set -ex
  #Install Java 
  mkdir /usr/lib/jvm -p 
  echo $TARGETPLATFORM
  cd /usr/lib/jvm/ 
- if [ "$TARGETPLATFORM" = "linux/amd64" ]; then curl -o zuluJava.tar.gz https://cdn.azul.com/zulu/bin/zulu21.52.15-ca-fx-jdk21.0.12-linux_x64.tar.gz; fi; 
- if [ "$TARGETPLATFORM" = "linux/arm64" ]; then curl -o zuluJava.tar.gz https://cdn.azul.com/zulu/bin/zulu21.52.15-ca-fx-jdk21.0.12-linux_aarch64.tar.gz; fi; 
+ if [ "$TARGETPLATFORM" = "linux/amd64" ]; then curl -o zuluJava.tar.gz https://cdn.azul.com/zulu/bin/zulu21.54.109-ca-fx-jdk21.0.13.0.3-linux_x64.tar.gz; fi; 
+ if [ "$TARGETPLATFORM" = "linux/arm64" ]; then curl -o zuluJava.tar.gz https://cdn.azul.com/zulu/bin/zulu21.54.109-ca-fx-jdk21.0.13.0.3-linux_aarch64.tar.gz; fi; 
 
  #Configure Java using Zulu 21 JDK
  cd /usr/lib/jvm/
@@ -125,6 +127,8 @@ COPY yellowfin-installer.jar /tmp/yellowfin.jar
 #######################################################################################################
 RUN <<EOT
  #Extract Yellowfin
+ set -ex
+ 
  mkdir -p /opt/yellowfin /tmp/yftemp /tmp/yftemp2/appserver/webapps/ROOT /opt/yellowfin/appserver/logs
  #Perform application extraction
  unzip /tmp/yellowfin.jar -d /tmp/yftemp  
@@ -144,7 +148,10 @@ EOT
 #######################################################################################################
 
 COPY perform_docker_configuration.sh /opt/yellowfin/appserver/bin
+
 RUN <<EOT
+ # Configure docker configuration to run on tomcat startup
+ set -ex
  chmod +x /opt/yellowfin/appserver/bin/perform_docker_configuration.sh
  sed -i 's/exec "$PRGDIR"\/"$EXECUTABLE" start "$@"/\/opt\/yellowfin\/appserver\/bin\/perform_docker_configuration.sh\nexec "$PRGDIR"\/"$EXECUTABLE" run "$@"/g' /opt/yellowfin/appserver/bin/startup.sh
 EOT
