@@ -24,6 +24,9 @@ sed -i 's/JAVA_HOME="${JDKPath}"/#JAVA_HOME=Removed For Docker/g' /opt/yellowfin
 # Replace CATALINA_HOME="${INSTALL_PATH} with "CATALINA_HOME="/opt/yellowfin/appserver"
 sed -i 's/CATALINA_HOME="${INSTALL_PATH}\/appserver"/CATALINA_HOME="\/opt\/yellowfin\/appserver"/g' /opt/yellowfin/appserver/bin/catalina.sh
 
+#Add -XX:-UseBASE64Intrinsics for CVE-C026-114938
+sed -i 's/-Xmx${installer.app-server-memory}m/-Xmx${installer.app-server-memory}m -XX:-UseBASE64Intrinsics/g' /opt/yellowfin/appserver/bin/catalina.sh
+
 # Use Default Java Memory allocation, or set to the value of $APP_MEMORY
 if [ ! -z "${APP_MEMORY}" ]; then
   # Replace JAVA_OPTS="$JAVA_OPTS -Xms128m -Xmx{APP_MEMORY}m

@@ -114,6 +114,7 @@ RUN chmod +x /opt/yellowfin/appserver/bin/catalina.sh /opt/yellowfin/appserver/b
 # Create docker-entry file, that starts PostgreSQL and then Yellowfin
 
 RUN echo pg_ctlcluster 18 main start > /opt/docker-entry.sh \
+&& echo "sed -i 's/-Xmx2048m/-Xmx2048m -XX:-UseBASE64Intrinsics/g' /opt/yellowfin/appserver/bin/catalina.sh " >> /opt/docker-entry.sh \
 && echo "echo Over-ride Memory: \$APP_MEMORY" >> /opt/docker-entry.sh \
 && echo "if [ ! -z \"\${APP_MEMORY}\" ]; then " >> /opt/docker-entry.sh \
 && echo " sed -i 's/-Xmx2048m/-Xmx'\"\$APP_MEMORY\"'m/g' /opt/yellowfin/appserver/bin/catalina.sh " >> /opt/docker-entry.sh \
