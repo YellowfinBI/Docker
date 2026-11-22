@@ -38,7 +38,7 @@ RUN apt-get update -y && apt-get upgrade -y && apt-get install -y unzip tar curl
  fontconfig liboss4-salsa-asound2 libglib2.0-0  postgresql-18 sudo libpangoft2-1.0-0 -y
 
 #Configure Java 21 using Zulu 21 JDK
-RUN mkdir /usr/lib/jvm -p && cd /usr/lib/jvm/ && curl -o zuluJava.tar.gz https://cdn.azul.com/zulu/bin/zulu21.54.109-ca-fx-jdk21.0.13.0.3-linux_x64.tar.gz \
+RUN mkdir /usr/lib/jvm -p && cd /usr/lib/jvm/ && curl -o zuluJava.tar.gz https://cdn.azul.com/zulu/bin/zulu21.54.201-ca-fx-jdk21.0.13.1-linux_x64.tar.gz \
 && cd /usr/lib/jvm/ && mkdir zulu-jdk && tar -xzf zuluJava.tar.gz -C zulu-jdk --strip-components=1 && rm zuluJava.tar.gz
 ENV JAVA_HOME=/usr/lib/jvm/zulu-jdk/
 ENV PATH="$JAVA_HOME/bin:$PATH"
@@ -114,7 +114,6 @@ RUN chmod +x /opt/yellowfin/appserver/bin/catalina.sh /opt/yellowfin/appserver/b
 # Create docker-entry file, that starts PostgreSQL and then Yellowfin
 
 RUN echo pg_ctlcluster 18 main start > /opt/docker-entry.sh \
-&& echo "sed -i 's/-Xmx2048m/-Xmx2048m -XX:-UseBASE64Intrinsics/g' /opt/yellowfin/appserver/bin/catalina.sh " >> /opt/docker-entry.sh \
 && echo "echo Over-ride Memory: \$APP_MEMORY" >> /opt/docker-entry.sh \
 && echo "if [ ! -z \"\${APP_MEMORY}\" ]; then " >> /opt/docker-entry.sh \
 && echo " sed -i 's/-Xmx2048m/-Xmx'\"\$APP_MEMORY\"'m/g' /opt/yellowfin/appserver/bin/catalina.sh " >> /opt/docker-entry.sh \
