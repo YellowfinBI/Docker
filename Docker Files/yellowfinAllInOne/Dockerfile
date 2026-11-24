@@ -54,8 +54,8 @@ RUN <<EOT
  mkdir /usr/lib/jvm -p 
  echo $TARGETPLATFORM
  cd /usr/lib/jvm/ 
- if [ "$TARGETPLATFORM" = "linux/amd64" ]; then curl -o zuluJava.tar.gz https://cdn.azul.com/zulu/bin/zulu21.54.109-ca-fx-jdk21.0.13.0.3-linux_x64.tar.gz; fi; 
- if [ "$TARGETPLATFORM" = "linux/arm64" ]; then curl -o zuluJava.tar.gz https://cdn.azul.com/zulu/bin/zulu21.54.109-ca-fx-jdk21.0.13.0.3-linux_aarch64.tar.gz; fi; 
+ if [ "$TARGETPLATFORM" = "linux/amd64" ]; then curl -o zuluJava.tar.gz https://cdn.azul.com/zulu/bin/zulu21.54.201-ca-fx-jdk21.0.13.1-linux_x64.tar.gz; fi; 
+ if [ "$TARGETPLATFORM" = "linux/arm64" ]; then curl -o zuluJava.tar.gz https://cdn.azul.com/zulu/bin/zulu21.54.201-ca-fx-jdk21.0.13.1-linux_aarch64.tar.gz; fi; 
 
  #Configure Java using Zulu 21 JDK
  cd /usr/lib/jvm/
